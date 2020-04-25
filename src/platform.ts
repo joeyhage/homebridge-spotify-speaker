@@ -88,7 +88,7 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
 
     // create the accessory handler
     // this is imported from `platformAccessory.ts`
-    new ExamplePlatformAccessory(accessory, this);
+    new ExamplePlatformAccessory(this, accessory);
 
     // add the restored accessory to the accessories cache so we can track if it has already been registered
     this.accessories.push(accessory);
@@ -169,7 +169,7 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
 =======
         // create the accessory handler
         // this is imported from `platformAccessory.ts`
-        new ExamplePlatformAccessory(accessory, this);
+        new ExamplePlatformAccessory(this, accessory);
 
         // link the accessory to your platform
         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);

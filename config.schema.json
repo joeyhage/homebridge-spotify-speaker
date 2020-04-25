@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
   "pluginAlias": "HomebridgeSpotify",
-=======
-  "pluginAlias": "ExampleHomebridgePlugin",
->>>>>>> 7d40dc0 (split into multiple files)
   "pluginType": "platform",
   "singular": true,
   "schema": {
