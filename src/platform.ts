@@ -84,9 +84,6 @@ export class HomebridgeSpotifyPlatform implements DynamicPlatformPlugin {
         new SpotifyPlaylistPlayerAccessory(this, accessory, this.log);
         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
       }
-
-      // it is possible to remove platform accessories at any time using `api.unregisterPlatformAccessories`, eg.:
-      // this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
     }
   }
 }
