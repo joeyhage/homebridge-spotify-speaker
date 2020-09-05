@@ -13,7 +13,11 @@
   },
   "engines": {
     "node": ">=10.17.0",
+<<<<<<< HEAD
     "homebridge": ">=1.3.0"
+=======
+    "homebridge": ">=1.0.0"
+>>>>>>> 73eb931 (update deps)
   },
   "main": "dist/index.js",
   "scripts": {
