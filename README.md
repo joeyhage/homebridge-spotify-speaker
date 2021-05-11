@@ -42,3 +42,7 @@ To use this plugin you must provide some authentication information to Spotify a
     https://example.com/callback?code=AQDPqT0ctdUm-uE2JRwbAoaWA-iRm0OuGY7wI17zQUlTxw7JfRma6id1mq-m8xKH6vJVNutJSqQcBrPZ__81uF-hrSJ-q_AX2yUEwERQKTnaPLDFCIE-c_qBjg81JSd5FqmEpJ5j9ddgKvkWUJ6WK5Kj-npTypCrUoQWRn9Vkn33DlYOfU7BxgPAPQBXQtqIfub3S576-gdUOGUAGPd6Ud5esSNMeI2lFKb-sj4eMiQJJJb35VI__EkRuFFJNCZkFagr3rBI-GGzfQA
     ```
     
+
+For more details, see the [offical auth documentation](https://developer.spotify.com/documentation/general/guides/authorization-guide/#authorization-code-flow)
+
+And you can find [all the scopes here](https://developer.spotify.com/documentation/general/guides/scopes/)
