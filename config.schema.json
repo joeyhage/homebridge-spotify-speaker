@@ -9,7 +9,22 @@
         "title": "Name",
         "type": "string",
         "required": true,
-        "default": "Example Dynamic Platform"
+        "default": "HomebridgeSpotify"
+      },
+      "spotifyClientId": {
+        "title": "Spotify Client ID",
+        "type": "string",
+        "required": true
+      },
+      "spotifyClientSecret": {
+        "title": "Spotify Client Secret",
+        "type": "string",
+        "required": true
+      },
+      "spotifyAuthCode": {
+        "title": "Spotify Auth Code",
+        "type": "string",
+        "required": true
       }
     }
   }
