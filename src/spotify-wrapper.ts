@@ -44,7 +44,7 @@ export class SpotifyWrapper {
       this.spotifyApi.setAccessToken(data.body['access_token']);
       this.spotifyApi.setRefreshToken(data.body['refresh_token']);
     } catch (err) {
-      this.log.error('Could not authorize Spotify', err);
+      this.log.error('Could not authorize Spotify: \n\n', err);
       throw new Error(SPOTIFY_AUTH_ERROR);
     }
   }

@@ -4,11 +4,6 @@ import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
 import { ExamplePlatformAccessory } from './platformAccessory';
 import { SpotifyWrapper } from './spotify-wrapper';
 
-/**
- * HomebridgePlatform
- * This class is the main constructor for your plugin, this is where you should
- * parse the user config and discover/register accessories with Homebridge.
- */
 export class HomebridgeSpotifyPlatform implements DynamicPlatformPlugin {
   public readonly Service: typeof Service = this.api.hap.Service;
   public readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic;
@@ -22,10 +17,15 @@ export class HomebridgeSpotifyPlatform implements DynamicPlatformPlugin {
   ) {
     this.log.debug('Finished initializing platform:', this.config.name);
 
+    // TODO: Store access + refresh token and reuse them when app restart since auth code expires.
+    const storagePath = api.user.storagePath();
+    this.log.debug(storagePath);
+
     this.spotifyWrapper = new SpotifyWrapper(log, config);
 
     this.api.on('didFinishLaunching', () => {
       log.debug('Executed didFinishLaunching callback');
+
       // run the method to discover / register your devices as accessories
       // this.discoverDevices();
     });
