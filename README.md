@@ -6,9 +6,9 @@
 
 This plugin is used to control Spotify for specific use cases.
 
-I have a little feather friend at home and I wanted an easy way to start playing its Spotify playlist when we leave home. Since Apple only supports Music in the Home app, I created this plugin to be able to have a simple switch to start playing a specific playlist on a specific device using Spotify Connect API. I'll improve it in the future, but for now this is what I needed.
+I have a little feather friend at home and I wanted an easy way to start playing its Spotify playlist when we leave home. Since Apple only supports Music in the Home app, I created this plugin to be able to have a simple switch to start playing a specific playlist on a specific device using Spotify Connect API. I might improve it in the future, but for now this is what I needed.
 
-This is for my personnal use, but I let the repo public if it could be of use to someone else. All the login logic is there for Spotify, you will find it in `src/spotify-api-wrapper.ts`. I made it easy to improve this plugin and add new features, PRs are the most welcome!
+This is for my personnal use, but I let the repo public if it could be of use to someone else. All the login logic is there for Spotify, you will find it in `src/spotifyApiWrapper.ts`. I made it easy to improve this plugin and add new features, PRs are the most welcome!
 
 ## Spotify Setup
 

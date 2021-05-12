@@ -67,8 +67,8 @@ export class SpotifyApiWrapper {
       tokens = JSON.parse(
         fs.readFileSync(this.persistPath, { encoding: 'utf-8' }),
       );
-    } catch {
-      // File not created yet
+    } catch (err) {
+      this.log.debug('Failed to fetch tokens:\n\n', err);
       return;
     }
 
@@ -111,6 +111,10 @@ export class SpotifyApiWrapper {
   }
 
   persistTokens() {
+    if (!this.spotifyApi.getAccessToken() || !this.spotifyApi.getRefreshToken()) {
+      return;
+    }
+
     const writeData = JSON.stringify({
       accessToken: this.spotifyApi.getAccessToken(),
       refreshToken: this.spotifyApi.getRefreshToken(),
@@ -123,6 +127,7 @@ export class SpotifyApiWrapper {
     }
   }
 
+  // TODO: Implement retries, it failed me once.
   async refreshToken() {
     try {
       const data = await this.spotifyApi.refreshAccessToken();
