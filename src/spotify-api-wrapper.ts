@@ -10,9 +10,10 @@ import {
   SPOTIFY_REFRESH_TOKEN_ERROR,
 } from './constants';
 
-export class SpotifyWrapper {
-  private spotifyApi: SpotifyWebApi;
+export class SpotifyApiWrapper {
+  private authCode: string;
   private persistPath: string;
+  private spotifyApi: SpotifyWebApi;
 
   constructor(
     public readonly log: Logger,
@@ -30,6 +31,7 @@ export class SpotifyWrapper {
       throw new Error(SPOTIFY_MISSING_CONFIGURATION_ERROR);
     }
 
+    this.authCode = config.spotifyAuthCode;
     this.persistPath = `${api.user.persistPath()}/.homebridge-spotify`;
 
     this.spotifyApi = new SpotifyWebApi({
@@ -37,35 +39,13 @@ export class SpotifyWrapper {
       clientSecret: config.spotifyClientSecret,
       redirectUri: DEFAULT_SPOTIFY_CALLBACK,
     });
-
-    this.authenticate(config.spotifyAuthCode);
-    this.persistTokens();
-    this.log.debug('Spotify auth success');
   }
 
-  async authenticate(authCode) {
-    await this.fetchTokensFromStorage();
-    if (this.spotifyApi.getAccessToken()) {
-      return;
-    }
-
-    await this.authWithCodeGrant(authCode);
-    if (this.spotifyApi.getAccessToken()) {
-      return;
-    }
-
-    this.log.error(
-      `We could not fetch the Spotify tokens nor authenticate using the code grant flow.
-        Please redo the manual login step, provide the new auth code in the config then try again.`,
-    );
-    throw new Error(SPOTIFY_AUTH_ERROR);
-  }
-
-  async authWithCodeGrant(authCode) {
+  private async authWithCodeGrant() {
     this.log.debug('Attempting the code grant authorization flow');
 
     try {
-      const data = await this.spotifyApi.authorizationCodeGrant(authCode);
+      const data = await this.spotifyApi.authorizationCodeGrant(this.authCode);
 
       this.log.debug('The token expires in ' + data.body['expires_in']);
       this.log.debug('The access token is ' + data.body['access_token']);
@@ -79,7 +59,7 @@ export class SpotifyWrapper {
     }
   }
 
-  async fetchTokensFromStorage() {
+  private async fetchTokensFromStorage() {
     this.log.debug('Attempting to fetch tokens saved in the storage');
 
     let tokens;
@@ -110,6 +90,26 @@ export class SpotifyWrapper {
     }
   }
 
+  async authenticate() {
+    await this.fetchTokensFromStorage();
+    if (this.spotifyApi.getAccessToken()) {
+      this.log.debug('Spotify auth success using saved tokens');
+      return;
+    }
+
+    await this.authWithCodeGrant();
+    if (this.spotifyApi.getAccessToken()) {
+      this.log.debug('Spotify auth success using authorization code flow');
+      return;
+    }
+
+    this.log.error(
+      `We could not fetch the Spotify tokens nor authenticate using the code grant flow.
+        Please redo the manual login step, provide the new auth code in the config then try again.`,
+    );
+    throw new Error(SPOTIFY_AUTH_ERROR);
+  }
+
   persistTokens() {
     const writeData = JSON.stringify({
       accessToken: this.spotifyApi.getAccessToken(),
@@ -119,7 +119,7 @@ export class SpotifyWrapper {
     try {
       fs.writeFileSync(this.persistPath, writeData);
     } catch (err) {
-      this.log.warn('Failed to persist tokens, the plugin will not be able to authenticate when homebridge restarts:\n\n', err);
+      this.log.warn('Failed to persist tokens, the plugin might not be able to authenticate when homebridge restarts:\n\n', err);
     }
   }
 
@@ -129,6 +129,7 @@ export class SpotifyWrapper {
       this.log.debug('The access token has been refreshed!');
 
       this.spotifyApi.setAccessToken(data.body['access_token']);
+      this.persistTokens();
     } catch (err) {
       this.log.debug('Could not refresh access token:\n\n', err);
       throw new Error(SPOTIFY_REFRESH_TOKEN_ERROR);
