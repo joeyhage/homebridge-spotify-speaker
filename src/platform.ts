@@ -17,17 +17,17 @@ export class HomebridgeSpotifyPlatform implements DynamicPlatformPlugin {
   ) {
     this.log.debug('Finished initializing platform:', this.config.name);
 
-    // TODO: Store access + refresh token and reuse them when app restart since auth code expires.
-    const storagePath = api.user.storagePath();
-    this.log.debug(storagePath);
-
-    this.spotifyWrapper = new SpotifyWrapper(log, config);
+    this.spotifyWrapper = new SpotifyWrapper(log, config, api);
 
     this.api.on('didFinishLaunching', () => {
       log.debug('Executed didFinishLaunching callback');
 
       // run the method to discover / register your devices as accessories
       // this.discoverDevices();
+    });
+
+    this.api.on('shutdown', () => {
+      this.spotifyWrapper.persistTokens();
     });
   }
 
