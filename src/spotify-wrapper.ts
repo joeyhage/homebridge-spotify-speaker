@@ -2,6 +2,7 @@ import fs from 'fs';
 
 import { API, Logger, PlatformConfig } from 'homebridge';
 import SpotifyWebApi from 'spotify-web-api-node';
+
 import {
   DEFAULT_SPOTIFY_CALLBACK,
   SPOTIFY_AUTH_ERROR,

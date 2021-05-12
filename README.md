@@ -46,3 +46,11 @@ To use this plugin you must provide some authentication information to Spotify a
 For more details, see the [offical auth documentation](https://developer.spotify.com/documentation/general/guides/authorization-guide/#authorization-code-flow)
 
 And you can find [all the scopes here](https://developer.spotify.com/documentation/general/guides/scopes/)
+
+## Spotify authentication flow
+
+With the previous steps, you will provide the code grant and the plugin will do the rest.
+
+- It will generate the access and refresh tokens
+- It will store them in a file named `.homebridge-spotify` in the homebridge's persist directory. Thus when your homebridge server restarts, it can fetch back the tokens.
+- It will automatically refresh the access token when needed
