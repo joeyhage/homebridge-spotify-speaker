@@ -1,5 +1,4 @@
 {
-  "private": true,
   "displayName": "Homebridge Spotify",
   "name": "@poblouin/homebridge-spotify",
   "version": "0.0.1",

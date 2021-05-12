@@ -2,12 +2,12 @@ import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, 
 
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
 import { ExamplePlatformAccessory } from './platformAccessory';
-import { SpotifyWrapper } from './spotify-wrapper';
+import { SpotifyApiWrapper } from './spotify-api-wrapper';
 
 export class HomebridgeSpotifyPlatform implements DynamicPlatformPlugin {
   public readonly Service: typeof Service = this.api.hap.Service;
   public readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic;
-  public readonly spotifyWrapper: SpotifyWrapper;
+  public readonly spotifyApiWrapper: SpotifyApiWrapper;
   public readonly accessories: PlatformAccessory[] = [];
 
   constructor(
@@ -16,18 +16,20 @@ export class HomebridgeSpotifyPlatform implements DynamicPlatformPlugin {
     public readonly api: API,
   ) {
     this.log.debug('Finished initializing platform:', this.config.name);
+    this.spotifyApiWrapper = new SpotifyApiWrapper(log, config, api);
 
-    this.spotifyWrapper = new SpotifyWrapper(log, config, api);
-
-    this.api.on('didFinishLaunching', () => {
+    this.api.on('didFinishLaunching', async () => {
       log.debug('Executed didFinishLaunching callback');
+
+      await this.spotifyApiWrapper.authenticate();
 
       // run the method to discover / register your devices as accessories
       // this.discoverDevices();
     });
 
+    // Make sure we have the latest tokens saved
     this.api.on('shutdown', () => {
-      this.spotifyWrapper.persistTokens();
+      this.spotifyApiWrapper.persistTokens();
     });
   }
 

@@ -4,11 +4,11 @@
 
 # Homebridge Spotify
 
-** IN DEVELOPMENT **
+This plugin is used to control Spotify for specific use cases.
 
-This plugin is used to control Spotify.
+I have a little feather friend at home and I wanted an easy way to start playing its Spotify playlist when we leave home. Since Apple only supports Music in the Home app, I created this plugin to be able to have a simple switch to start playing a specific playlist on a specific device using Spotify Connect API. I'll improve it in the future, but for now this is what I needed.
 
-This is for my personnal use, but I let the repo public if it could be of use to someone else.
+This is for my personnal use, but I let the repo public if it could be of use to someone else. All the login logic is there for Spotify, you will find it in `src/spotify-api-wrapper.ts`. I made it easy to improve this plugin and add new features, PRs are the most welcome!
 
 ## Spotify Setup
 
@@ -37,7 +37,7 @@ To use this plugin you must provide some authentication information to Spotify a
     - Then you will be redirected and you will find your code in the URL
 
     ```
-    Example:
+    Example, you will get an URL that looks like the following. The code is everything that follows `code=`.
 
     https://example.com/callback?code=AQDPqT0ctdUm-uE2JRwbAoaWA-iRm0OuGY7wI17zQUlTxw7JfRma6id1mq-m8xKH6vJVNutJSqQcBrPZ__81uF-hrSJ-q_AX2yUEwERQKTnaPLDFCIE-c_qBjg81JSd5FqmEpJ5j9ddgKvkWUJ6WK5Kj-npTypCrUoQWRn9Vkn33DlYOfU7BxgPAPQBXQtqIfub3S576-gdUOGUAGPd6Ud5esSNMeI2lFKb-sj4eMiQJJJb35VI__EkRuFFJNCZkFagr3rBI-GGzfQA
     ```
