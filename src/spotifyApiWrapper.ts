@@ -11,8 +11,9 @@ import {
 } from './constants';
 
 export class SpotifyApiWrapper {
-  private authCode: string;
-  private persistPath: string;
+  private readonly authCode: string;
+  private readonly persistPath: string;
+
   private spotifyApi: SpotifyWebApi;
 
   constructor(

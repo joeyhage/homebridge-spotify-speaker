@@ -1,0 +1,12 @@
+{
+  "accessories": [],
+  "platforms": [
+    {
+      "name": "HomebridgeSpotify",
+      "platform": "HomebridgeSpotify",
+      "spotifyClientId": "...",
+      "spotifyClientSecret": "...",
+      "spotifyAuthCode": "..."
+    }
+  ]
+}

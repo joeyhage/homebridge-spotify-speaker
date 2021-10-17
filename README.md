@@ -1,14 +1,14 @@
-<p align="center">
-    <img src="https://github.com/homebridge/branding/raw/master/logos/homebridge-wordmark-logo-vertical.png" width="150">
+<p style="text-align: center;">
+    <img alt="homebridge-logo" src="https://github.com/homebridge/branding/raw/master/logos/homebridge-wordmark-logo-vertical.png" width="150">
 </p>
 
 # Homebridge Spotify
 
 This plugin is used to control Spotify for specific use cases.
 
-I have a little feather friend at home and I wanted an easy way to start playing its Spotify playlist when we leave home. Since Apple only supports Music in the Home app, I created this plugin to be able to have a simple switch to start playing a specific playlist on a specific device using Spotify Connect API. I might improve it in the future, but for now this is what I needed.
+I have two little feather friends at home, and I wanted an easy way to start playing their Spotify playlist when we leave home. Since Apple only supports Music in the Home app, I created this plugin to be able to have a simple switch to start playing a specific playlist on a specific device using Spotify Connect API. I might improve it in the future, but for now this is what I needed.
 
-This is for my personnal use, but I let the repo public if it could be of use to someone else. All the login logic is there for Spotify, you will find it in `src/spotifyApiWrapper.ts`. I made it easy to improve this plugin and add new features, PRs are the most welcome!
+This is for my personal use, but I let the repo public if it could be of use to someone else. All the login logic is there for Spotify, you will find it in `src/spotifyApiWrapper.ts`. I made it easy to improve this plugin and add new features, PRs are the most welcome!
 
 ## Spotify Setup
 
@@ -43,14 +43,14 @@ To use this plugin you must provide some authentication information to Spotify a
     ```
     
 
-For more details, see the [offical auth documentation](https://developer.spotify.com/documentation/general/guides/authorization-guide/#authorization-code-flow)
+For more details, see the [official auth documentation](https://developer.spotify.com/documentation/general/guides/authorization-guide/#authorization-code-flow)
 
 And you can find [all the scopes here](https://developer.spotify.com/documentation/general/guides/scopes/)
 
-## Spotify authentication flow
+## Spotify's authentication flow
 
 With the previous steps, you will provide the code grant and the plugin will do the rest.
 
 - It will generate the access and refresh tokens
-- It will store them in a file named `.homebridge-spotify` in the homebridge's persist directory. Thus when your homebridge server restarts, it can fetch back the tokens.
+- It will store them in a file named `.homebridge-spotify` in the homebridge's persist directory. Thus, when your homebridge server restarts, it can fetch back the tokens.
 - It will automatically refresh the access token when needed
