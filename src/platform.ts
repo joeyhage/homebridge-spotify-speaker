@@ -29,6 +29,10 @@ export class HomebridgeSpotifyPlatform implements DynamicPlatformPlugin {
 
       try {
         await this.spotifyApiWrapper?.authenticate();
+
+        const spotifyDevices = await this.spotifyApiWrapper?.getMyDevices();
+        log.info('Available Spotify devices', spotifyDevices);
+
         this.discoverDevices();
       } catch {
         return;
@@ -48,19 +52,7 @@ export class HomebridgeSpotifyPlatform implements DynamicPlatformPlugin {
   }
 
   discoverDevices() {
-
-    // EXAMPLE ONLY
-    // A real plugin you would discover accessories from the local network, cloud services
-    // or a user-defined array in the platform config.
-    const exampleDevices = [
-      {
-        deviceName: 'Cool Speaker',
-        spotifyDeviceId: '123',
-        spotifyPlaylistId: '456',
-      },
-    ];
-
-    for (const device of exampleDevices) {
+    for (const device of this.config.devices) {
       const uuid = this.api.hap.uuid.generate(device.spotifyDeviceId);
       const existingAccessory = this.accessories.find(accessory => accessory.UUID === uuid);
 
@@ -71,7 +63,7 @@ export class HomebridgeSpotifyPlatform implements DynamicPlatformPlugin {
         existingAccessory.context.device = device;
         this.api.updatePlatformAccessories([existingAccessory]);
 
-        new SpotifyPlaylistPlayerAccessory(this, existingAccessory, this.log);
+        new SpotifyPlaylistPlayerAccessory(this, existingAccessory, device, this.log);
       } else {
         this.log.info('Adding new accessory:', device.deviceName);
 
@@ -81,7 +73,7 @@ export class HomebridgeSpotifyPlatform implements DynamicPlatformPlugin {
         // the `context` property can be used to store any data about the accessory you may need
         accessory.context.device = device;
 
-        new SpotifyPlaylistPlayerAccessory(this, accessory, this.log);
+        new SpotifyPlaylistPlayerAccessory(this, accessory, device, this.log);
         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
       }
     }
