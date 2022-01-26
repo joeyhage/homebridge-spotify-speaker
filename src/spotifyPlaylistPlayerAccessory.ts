@@ -45,7 +45,7 @@ export class SpotifyPlaylistPlayerAccessory {
     this.isOn = value;
 
     !this.isOn ?
-      this.platform.spotifyApiWrapper?.pause({ device_id: this.device.spotifyDeviceId})
-      : this.platform.spotifyApiWrapper?.play({context_uri: this.device.spotifyPlaylistId, device_id: this.device.spotifyDeviceId });
+      this.platform.spotifyApiWrapper?.pause(this.device.spotifyDeviceId)
+      : this.platform.spotifyApiWrapper?.play(this.device.spotifyDeviceId, this.device.spotifyPlaylistId);
   }
 }

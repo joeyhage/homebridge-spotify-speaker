@@ -142,12 +142,24 @@ export class SpotifyApiWrapper {
     }
   }
 
-  async play(args: any) {
-    await this.spotifyApi.play(args);
+  async play( deviceId: string,
+    contextUri: string,
+    uris?: string,
+    offset?: number,
+    positionMs?: number) {
+    const options = {
+      device_id: deviceId,
+      context_uri: contextUri,
+      ...(uris && {uris}),
+      ...(offset && {offset}),
+      ...(positionMs && {position_ms: positionMs}),
+    };
+
+    await this.spotifyApi.play(options);
   }
 
-  async pause(args: any) {
-    await this.spotifyApi.pause(args);
+  async pause(deviceId: string) {
+    await this.spotifyApi.pause({ device_id: deviceId });
   }
 
   async getMyDevices() {
