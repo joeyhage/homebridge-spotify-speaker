@@ -141,4 +141,22 @@ export class SpotifyApiWrapper {
       throw new Error(SPOTIFY_REFRESH_TOKEN_ERROR);
     }
   }
+
+  async play(args: any) {
+    await this.spotifyApi.play(args);
+  }
+
+  async pause(args: any) {
+    await this.spotifyApi.pause(args);
+  }
+
+  async getMyDevices() {
+    try {
+      const res = await this.spotifyApi.getMyDevices();
+      return res.body.devices;
+    } catch (error) {
+      this.log.error('Failed to fetch available Spotify devices.');
+      return null;
+    }
+  }
 }

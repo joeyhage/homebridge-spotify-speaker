@@ -1,6 +1,7 @@
 import { Service, PlatformAccessory, Logger } from 'homebridge';
 
 import { HomebridgeSpotifyPlatform } from './platform';
+import { HomebridgeSpotifyDevice } from './types';
 
 export class SpotifyPlaylistPlayerAccessory {
   private service: Service;
@@ -9,6 +10,7 @@ export class SpotifyPlaylistPlayerAccessory {
   constructor(
     private readonly platform: HomebridgeSpotifyPlatform,
     private readonly accessory: PlatformAccessory,
+    private readonly device: HomebridgeSpotifyDevice,
     public readonly log: Logger,
   ) {
     this.isOn = false;
@@ -41,5 +43,9 @@ export class SpotifyPlaylistPlayerAccessory {
   handleOnSet(value) {
     this.log.debug('Triggered SET On:', value);
     this.isOn = value;
+
+    !this.isOn ?
+      this.platform.spotifyApiWrapper?.pause({ device_id: this.device.spotifyDeviceId})
+      : this.platform.spotifyApiWrapper?.play({context_uri: this.device.spotifyPlaylistId, device_id: this.device.spotifyDeviceId });
   }
 }

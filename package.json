@@ -3,7 +3,7 @@
   "name": "@poblouin/homebridge-spotify",
   "version": "0.0.1",
   "description": "Homebridge plugin to interact with Spotify",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git://github.com:poblouin/homebridge-spotify.git"

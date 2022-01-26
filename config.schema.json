@@ -25,6 +25,33 @@
         "title": "Spotify Auth Code",
         "type": "string",
         "required": true
+      },
+      "devices": {
+        "type": "array",
+        "items": {
+          "title": "Device",
+          "type": "object",
+          "properties": {
+            "deviceName": {
+              "title": "Device Name",
+              "description": "Friendly device name that will be displayed in Homekit.",
+              "type": "string",
+              "required": true
+            },
+            "spotifyDeviceId": {
+              "title": "Spotify Device ID",
+              "description": "The Spotify Device ID. You can find a list of available device in the plugin's logs when it starts or see the README",
+              "type": "string",
+              "required": true
+            },
+            "spotifyPlaylistId": {
+              "title": "Spotify Playlist ID",
+              "description": "The ID of the Spotify playlist that you want to play when this device will be set to ON in Homekit.",
+              "type": "string",
+              "required": true
+            }
+          }
+        } 
       }
     }
   }
