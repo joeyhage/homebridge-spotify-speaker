@@ -45,7 +45,7 @@ To use this plugin you must provide some authentication information to Spotify a
 
 For more details, see the [official auth documentation](https://developer.spotify.com/documentation/general/guides/authorization-guide/#authorization-code-flow)
 
-And you can find [all the scopes here](https://developer.spotify.com/documentation/general/guides/scopes/)
+And you can find [all the scopes here](https://developer.spotify.com/documentation/general/guides/authorization/scopes/)
 
 ## Spotify's authentication flow
 
