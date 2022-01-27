@@ -9,6 +9,7 @@ import {
   SPOTIFY_MISSING_CONFIGURATION_ERROR,
   SPOTIFY_REFRESH_TOKEN_ERROR,
 } from './constants';
+import { WebapiError } from './types';
 
 export class SpotifyApiWrapper {
   private readonly authCode: string;
@@ -173,11 +174,9 @@ export class SpotifyApiWrapper {
   private async wrappedRequest(cb: () => void) {
     try {
       await cb();
-    } catch (error: any) {
-      this.log.debug('Request error', error);
-
-      if (error.name === 'WebapiRegularError' && error.statusCode === 401) {
-        this.log.debug('Attempting token refresh');
+    } catch (error: unknown) {
+      if ((error as WebapiError).statusCode === 401) {
+        this.log.debug('Access token has expired, attempting token refresh');
 
         await this.refreshToken();
         await cb();
