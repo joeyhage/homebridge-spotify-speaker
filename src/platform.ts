@@ -1,13 +1,13 @@
 import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic } from 'homebridge';
 
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
-import { SpotifyPlaylistPlayerAccessory } from './spotifyPlaylistPlayerAccessory';
-import { SpotifyApiWrapper } from './spotifyApiWrapper';
+import { HomebridgeSpotifyAccessory } from './spotify-accessory';
+import { SpotifyApiWrapper } from './spotify-api-wrapper';
 
 export class HomebridgeSpotifyPlatform implements DynamicPlatformPlugin {
   public readonly Service: typeof Service = this.api.hap.Service;
   public readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic;
-  public readonly spotifyApiWrapper: SpotifyApiWrapper | null;
+  public readonly spotifyApiWrapper: SpotifyApiWrapper;
   public readonly accessories: PlatformAccessory[] = [];
 
   constructor(
@@ -17,32 +17,19 @@ export class HomebridgeSpotifyPlatform implements DynamicPlatformPlugin {
   ) {
     this.log.debug('Finished initializing platform:', this.config.name);
 
-    try {
-      this.spotifyApiWrapper = new SpotifyApiWrapper(log, config, api);
-    } catch (err) {
-      this.spotifyApiWrapper = null;
-      return;
-    }
+    this.spotifyApiWrapper = new SpotifyApiWrapper(log, config, api);
 
     this.api.on('didFinishLaunching', async () => {
       log.debug('Executed didFinishLaunching callback');
 
-      try {
-        await this.spotifyApiWrapper?.authenticate();
-
-        const spotifyDevices = await this.spotifyApiWrapper?.getMyDevices();
-        log.info('Available Spotify devices', spotifyDevices);
-
-        this.discoverDevices();
-      } catch {
-        return;
-      }
-
+      await this.spotifyApiWrapper.authenticate();
+      this.logAvailableSpotifyDevices();
+      this.discoverDevices();
     });
 
     // Make sure we have the latest tokens saved
     this.api.on('shutdown', () => {
-      this.spotifyApiWrapper?.persistTokens();
+      this.spotifyApiWrapper.persistTokens();
     });
   }
 
@@ -63,7 +50,7 @@ export class HomebridgeSpotifyPlatform implements DynamicPlatformPlugin {
         existingAccessory.context.device = device;
         this.api.updatePlatformAccessories([existingAccessory]);
 
-        new SpotifyPlaylistPlayerAccessory(this, existingAccessory, device, this.log);
+        new HomebridgeSpotifyAccessory(this, existingAccessory, device, this.log);
       } else {
         this.log.info('Adding new accessory:', device.deviceName);
 
@@ -73,9 +60,14 @@ export class HomebridgeSpotifyPlatform implements DynamicPlatformPlugin {
         // the `context` property can be used to store any data about the accessory you may need
         accessory.context.device = device;
 
-        new SpotifyPlaylistPlayerAccessory(this, accessory, device, this.log);
+        new HomebridgeSpotifyAccessory(this, accessory, device, this.log);
         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
       }
     }
+  }
+
+  private async logAvailableSpotifyDevices() {
+    const spotifyDevices = await this.spotifyApiWrapper.getMyDevices();
+    this.log.info('Available Spotify devices', spotifyDevices);
   }
 }
