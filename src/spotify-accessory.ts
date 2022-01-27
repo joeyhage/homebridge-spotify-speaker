@@ -3,7 +3,7 @@ import { Service, PlatformAccessory, Logger } from 'homebridge';
 import { HomebridgeSpotifyPlatform } from './platform';
 import { HomebridgeSpotifyDevice } from './types';
 
-export class SpotifyPlaylistPlayerAccessory {
+export class HomebridgeSpotifyAccessory {
   private service: Service;
   private isOn: boolean;
 

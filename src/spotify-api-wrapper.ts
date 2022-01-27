@@ -42,55 +42,6 @@ export class SpotifyApiWrapper {
     });
   }
 
-  private async authWithCodeGrant() {
-    this.log.debug('Attempting the code grant authorization flow');
-
-    try {
-      const data = await this.spotifyApi.authorizationCodeGrant(this.authCode);
-
-      this.log.debug('The token expires in ' + data.body['expires_in']);
-      this.log.debug('The access token is ' + data.body['access_token']);
-      this.log.debug('The refresh token is ' + data.body['refresh_token']);
-
-      this.spotifyApi.setAccessToken(data.body['access_token']);
-      this.spotifyApi.setRefreshToken(data.body['refresh_token']);
-    } catch (err) {
-      this.log.error('Could not authorize Spotify:\n\n', err);
-      throw new Error(SPOTIFY_AUTH_ERROR);
-    }
-  }
-
-  private async fetchTokensFromStorage() {
-    this.log.debug('Attempting to fetch tokens saved in the storage');
-
-    let tokens;
-    try {
-      tokens = JSON.parse(
-        fs.readFileSync(this.persistPath, { encoding: 'utf-8' }),
-      );
-    } catch (err) {
-      this.log.debug('Failed to fetch tokens:\n\n', err);
-      return;
-    }
-
-    if (!tokens.accessToken || ! tokens.refreshToken) {
-      return;
-    }
-
-    this.spotifyApi.setAccessToken(tokens.accessToken);
-    this.spotifyApi.setRefreshToken(tokens.refreshToken);
-    this.log.debug(
-      'Successfully fetched the tokens from storage, going to refresh the access token',
-    );
-
-    try {
-      await this.refreshToken();
-    } catch {
-      // Reset the creds since they are wrong, we will try the code auth grant instead.
-      this.spotifyApi.resetCredentials();
-    }
-  }
-
   async authenticate() {
     await this.fetchTokensFromStorage();
     if (this.spotifyApi.getAccessToken()) {
@@ -128,25 +79,13 @@ export class SpotifyApiWrapper {
     }
   }
 
-  // TODO: Implement retries, it failed me once.
-  async refreshToken() {
-    try {
-      const data = await this.spotifyApi.refreshAccessToken();
-      this.log.debug('The access token has been refreshed!');
-
-      this.spotifyApi.setAccessToken(data.body['access_token']);
-      this.persistTokens();
-    } catch (err) {
-      this.log.debug('Could not refresh access token:\n\n', err);
-      throw new Error(SPOTIFY_REFRESH_TOKEN_ERROR);
-    }
-  }
-
-  async play( deviceId: string,
+  async play(
+    deviceId: string,
     contextUri: string,
     uris?: string,
     offset?: number,
-    positionMs?: number) {
+    positionMs?: number,
+  ) {
     const options = {
       device_id: deviceId,
       context_uri: contextUri,
@@ -155,11 +94,11 @@ export class SpotifyApiWrapper {
       ...(positionMs && {position_ms: positionMs}),
     };
 
-    await this.spotifyApi.play(options);
+    await this.wrappedRequest(() => this.spotifyApi.play(options));
   }
 
   async pause(deviceId: string) {
-    await this.spotifyApi.pause({ device_id: deviceId });
+    await this.wrappedRequest(() => this.spotifyApi.pause({ device_id: deviceId }));
   }
 
   async getMyDevices() {
@@ -169,6 +108,84 @@ export class SpotifyApiWrapper {
     } catch (error) {
       this.log.error('Failed to fetch available Spotify devices.');
       return null;
+    }
+  }
+
+  private async authWithCodeGrant() {
+    this.log.debug('Attempting the code grant authorization flow');
+
+    try {
+      const data = await this.spotifyApi.authorizationCodeGrant(this.authCode);
+      this.spotifyApi.setAccessToken(data.body['access_token']);
+      this.spotifyApi.setRefreshToken(data.body['refresh_token']);
+    } catch (err) {
+      this.log.error('Could not authorize Spotify:\n\n', err);
+      throw new Error(SPOTIFY_AUTH_ERROR);
+    }
+  }
+
+  private async fetchTokensFromStorage() {
+    this.log.debug('Attempting to fetch tokens saved in the storage');
+
+    let tokens;
+    try {
+      tokens = JSON.parse(
+        fs.readFileSync(this.persistPath, { encoding: 'utf-8' }),
+      );
+    } catch (err) {
+      this.log.debug('Failed to fetch tokens: ', err);
+      return;
+    }
+
+    if (!tokens.accessToken || ! tokens.refreshToken) {
+      return;
+    }
+
+    this.spotifyApi.setAccessToken(tokens.accessToken);
+    this.spotifyApi.setRefreshToken(tokens.refreshToken);
+    this.log.debug(
+      'Successfully fetched the tokens from storage, going to refresh the access token',
+    );
+
+    try {
+      await this.refreshToken();
+    } catch {
+      // Reset the creds since they are wrong, we will try the code auth grant instead.
+      this.spotifyApi.resetCredentials();
+    }
+  }
+
+  // TODO: Implement retries, it failed me once.
+  async refreshToken() {
+    try {
+      const data = await this.spotifyApi.refreshAccessToken();
+      this.log.debug('The access token has been refreshed!');
+
+      this.spotifyApi.setAccessToken(data.body['access_token']);
+      this.persistTokens();
+    } catch (err) {
+      this.log.debug('Could not refresh access token: ', err);
+      throw new Error(SPOTIFY_REFRESH_TOKEN_ERROR);
+    }
+  }
+
+  // TODO: Use decorator or prettier pattern.
+  private async wrappedRequest(cb: () => void) {
+    try {
+      await cb();
+    } catch (error: any) {
+      this.log.debug('Request error', error);
+
+      if (error.name === 'WebapiRegularError' && error.statusCode === 401) {
+        this.log.debug('Attempting token refresh');
+
+        await this.refreshToken();
+        await cb();
+
+        return;
+      }
+
+      throw error;
     }
   }
 }
