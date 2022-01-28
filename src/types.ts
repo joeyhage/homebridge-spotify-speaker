@@ -1,4 +1,4 @@
-export interface HomebridgeSpotifyDevice {
+export interface HomebridgeSpotifySpeakerDevice {
   deviceName: string;
   spotifyDeviceId: string;
   spotifyPlaylistId: string;

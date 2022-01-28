@@ -1,5 +1,5 @@
 {
-  "pluginAlias": "HomebridgeSpotify",
+  "pluginAlias": "HomebridgeSpotifySpeaker",
   "pluginType": "platform",
   "singular": true,
   "schema": {
@@ -9,7 +9,7 @@
         "title": "Name",
         "type": "string",
         "required": true,
-        "default": "HomebridgeSpotify"
+        "default": "HomebridgeSpotifySpeaker"
       },
       "spotifyClientId": {
         "title": "Spotify Client ID",

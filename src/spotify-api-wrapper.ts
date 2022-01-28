@@ -34,7 +34,7 @@ export class SpotifyApiWrapper {
     }
 
     this.authCode = config.spotifyAuthCode;
-    this.persistPath = `${api.user.persistPath()}/.homebridge-spotify`;
+    this.persistPath = `${api.user.persistPath()}/.homebridge-spotify-speaker`;
 
     this.spotifyApi = new SpotifyWebApi({
       clientId: config.spotifyClientId,

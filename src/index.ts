@@ -1,8 +1,8 @@
 import { API } from 'homebridge';
 
 import { PLATFORM_NAME } from './settings';
-import { HomebridgeSpotifyPlatform } from './platform';
+import { HomebridgeSpotifySpeakerPlatform } from './platform';
 
 export = (api: API) => {
-  api.registerPlatform(PLATFORM_NAME, HomebridgeSpotifyPlatform);
+  api.registerPlatform(PLATFORM_NAME, HomebridgeSpotifySpeakerPlatform);
 };

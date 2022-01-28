@@ -1,11 +1,11 @@
-import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic, Categories } from 'homebridge';
+import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic } from 'homebridge';
 
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
 // import { SpotifySmartSpeakerAccessory } from './spotify-smart-speaker-accessory';
 import { SpotifyFakeSpeakerAccessory } from './spotify-speaker-accessory';
 import { SpotifyApiWrapper } from './spotify-api-wrapper';
 
-export class HomebridgeSpotifyPlatform implements DynamicPlatformPlugin {
+export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
   public readonly Service: typeof Service = this.api.hap.Service;
   public readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic;
   public readonly spotifyApiWrapper: SpotifyApiWrapper;
