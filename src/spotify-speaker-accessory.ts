@@ -1,7 +1,7 @@
 import { Service, PlatformAccessory, Logger, Categories } from 'homebridge';
 
-import { HomebridgeSpotifyPlatform } from './platform';
-import { HomebridgeSpotifyDevice } from './types';
+import { HomebridgeSpotifySpeakerPlatform } from './platform';
+import { HomebridgeSpotifySpeakerDevice } from './types';
 
 export class SpotifyFakeSpeakerAccessory {
   private static DEFAULT_POLL_INTERVAL_MS = 20 * 1000;
@@ -12,9 +12,9 @@ export class SpotifyFakeSpeakerAccessory {
   public static CATEGORY = Categories.LIGHTBULB;
 
   constructor(
-    private readonly platform: HomebridgeSpotifyPlatform,
+    private readonly platform: HomebridgeSpotifySpeakerPlatform,
     private readonly accessory: PlatformAccessory,
-    private readonly device: HomebridgeSpotifyDevice,
+    private readonly device: HomebridgeSpotifySpeakerDevice,
     public readonly log: Logger,
   ) {
     this.service =

@@ -1,15 +1,15 @@
 {
-  "displayName": "Homebridge Spotify",
-  "name": "@poblouin/homebridge-spotify",
+  "displayName": "Homebridge Spotify Speaker",
+  "name": "@poblouin/homebridge-spotify-speaker",
   "version": "0.0.1",
-  "description": "Homebridge plugin to interact with Spotify",
+  "description": "Homebridge plugin that creates a speaker that plays a specific Spotify playlist",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com:poblouin/homebridge-spotify.git"
+    "url": "git://github.com:poblouin/homebridge-spotify-speaker.git"
   },
   "bugs": {
-    "url": "https://github.com/poblouin/homebridge-spotify/issues"
+    "url": "https://github.com/poblouin/homebridge-spotify-speaker/issues"
   },
   "engines": {
     "node": ">=14.18.1",
@@ -23,7 +23,11 @@
     "prepublishOnly": "npm run lint && npm run build"
   },
   "keywords": [
-    "homebridge-plugin"
+    "homebridge-plugin",
+    "homebridge",
+    "spotify",
+    "speaker",
+    "music"
   ],
   "dependencies": {
     "spotify-web-api-node": "^5.0.2"
