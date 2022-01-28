@@ -1,4 +1,4 @@
-import { Service, PlatformAccessory, Logger } from 'homebridge';
+import { Service, PlatformAccessory, Logger, Categories } from 'homebridge';
 
 import { HomebridgeSpotifyPlatform } from './platform';
 import { HomebridgeSpotifyDevice } from './types';
@@ -9,6 +9,8 @@ export class SpotifySmartSpeakerAccessory {
   private currentMediaState: number;
   private targetMediaState: number;
   private currentVolume: number;
+
+  public static CATEGORY = Categories.SPEAKER;
 
   constructor(
     private readonly platform: HomebridgeSpotifyPlatform,

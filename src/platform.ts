@@ -2,7 +2,7 @@ import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, 
 
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
 // import { SpotifySmartSpeakerAccessory } from './spotify-smart-speaker-accessory';
-import { SpotifySpeakerAccessory } from './spotify-speaker-accessory';
+import { SpotifyFakeSpeakerAccessory } from './spotify-speaker-accessory';
 import { SpotifyApiWrapper } from './spotify-api-wrapper';
 
 export class HomebridgeSpotifyPlatform implements DynamicPlatformPlugin {
@@ -52,18 +52,18 @@ export class HomebridgeSpotifyPlatform implements DynamicPlatformPlugin {
         this.api.updatePlatformAccessories([existingAccessory]);
 
         // new SpotifySmartSpeakerAccessory(this, existingAccessory, device, this.log);
-        new SpotifySpeakerAccessory(this, existingAccessory, device, this.log);
+        new SpotifyFakeSpeakerAccessory(this, existingAccessory, device, this.log);
       } else {
         this.log.info('Adding new accessory:', device.deviceName);
 
-        const accessory = new this.api.platformAccessory(device.deviceName, uuid, Categories.SPEAKER);
+        const accessory = new this.api.platformAccessory(device.deviceName, uuid, SpotifyFakeSpeakerAccessory.CATEGORY);
 
         // store a copy of the device object in the `accessory.context`
         // the `context` property can be used to store any data about the accessory you may need
         accessory.context.device = device;
 
         // new SpotifySmartSpeakerAccessory(this, accessory, device, this.log);
-        new SpotifySpeakerAccessory(this, accessory, device, this.log);
+        new SpotifyFakeSpeakerAccessory(this, accessory, device, this.log);
         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
       }
     }
