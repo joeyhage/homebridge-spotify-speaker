@@ -9,7 +9,7 @@ import {
   SPOTIFY_MISSING_CONFIGURATION_ERROR,
   SPOTIFY_REFRESH_TOKEN_ERROR,
 } from './constants';
-import { WebapiError } from './types';
+import { SpotifyPlaybackState, WebapiError } from './types';
 
 export class SpotifyApiWrapper {
   private readonly authCode: string;
@@ -102,6 +102,14 @@ export class SpotifyApiWrapper {
     await this.wrappedRequest(() => this.spotifyApi.pause({ device_id: deviceId }));
   }
 
+  async getPlaybackState(): Promise<SpotifyPlaybackState> {
+    return this.wrappedRequest(() => this.spotifyApi.getMyCurrentPlaybackState());
+  }
+
+  async setVolume(volume: number, deviceId: string) {
+    await this.wrappedRequest(() => this.spotifyApi.setVolume(volume, { device_id: deviceId }));
+  }
+
   async getMyDevices() {
     try {
       const res = await this.spotifyApi.getMyDevices();
@@ -171,17 +179,16 @@ export class SpotifyApiWrapper {
   }
 
   // TODO: Use decorator or prettier pattern.
-  private async wrappedRequest(cb: () => void) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async wrappedRequest(cb: () => Promise<any>) {
     try {
-      await cb();
+      return cb();
     } catch (error: unknown) {
       if ((error as WebapiError).statusCode === 401) {
         this.log.debug('Access token has expired, attempting token refresh');
 
         await this.refreshToken();
-        await cb();
-
-        return;
+        return cb();
       }
 
       throw error;
