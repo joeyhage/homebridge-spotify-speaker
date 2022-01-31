@@ -19,24 +19,23 @@ export class SpotifySmartSpeakerAccessory {
     public readonly log: Logger,
   ) {
     this.service =
-      this.accessory.getService(
-        this.platform.Service.SmartSpeaker,
-      ) ||
-      this.accessory.addService(
-        this.platform.Service.SmartSpeaker,
-      );
+      this.accessory.getService(this.platform.Service.SmartSpeaker) ||
+      this.accessory.addService(this.platform.Service.SmartSpeaker);
 
     this.service.updateCharacteristic(this.platform.Characteristic.Name, this.device.deviceName);
     this.service.updateCharacteristic(this.platform.Characteristic.ConfiguredName, this.device.deviceName);
 
-    this.service.getCharacteristic(this.platform.Characteristic.CurrentMediaState)
+    this.service
+      .getCharacteristic(this.platform.Characteristic.CurrentMediaState)
       .onGet(this.handleCurrentMediaStateGet.bind(this));
 
-    this.service.getCharacteristic(this.platform.Characteristic.TargetMediaState)
+    this.service
+      .getCharacteristic(this.platform.Characteristic.TargetMediaState)
       .onGet(this.handleTargetMediaStateGet.bind(this))
       .onSet(this.handleTargetMediaStateSet.bind(this));
 
-    this.service.getCharacteristic(this.platform.Characteristic.Volume)
+    this.service
+      .getCharacteristic(this.platform.Characteristic.Volume)
       .onGet(this.handleVolumeGet.bind(this))
       .onSet(this.handleVolumeSet.bind(this));
 
@@ -67,7 +66,6 @@ export class SpotifySmartSpeakerAccessory {
         this.service.updateCharacteristic(this.platform.Characteristic.Volume, this.currentVolume);
       }
     }, SpotifySmartSpeakerAccessory.DEFAULT_POLL_INTERVAL_MS);
-
   }
 
   handleCurrentMediaStateGet(): number {
