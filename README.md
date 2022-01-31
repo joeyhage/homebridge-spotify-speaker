@@ -6,17 +6,15 @@
 
 **Please read before using and facing any deceptions**
 
-The main purpose of this plugin is to expose a speaker in Homekit that is linked to a specific spotify device ID that will play a specific playlist once activated. As of the current state, it is not a real speaker in Homekit, it's a lightbulb. A speaker accessory requires Airplay 2. With a lightbulb, you can toggle on/off and change the volume via the brightness setting.
+The main purpose of this plugin is to expose a speaker in Homekit that is linked to a specific spotify device ID and that will play a specific playlist once activated. As of the current state, it is not a real speaker in Homekit, it's a lightbulb. A speaker accessory requires Airplay 2 and Spotify is not Airplay 2 compatible yet (will it ever be!?). With a lightbulb, you can toggle on/off the playlist and change the volume via the brightness setting.
 
-I have one little feather friend at home, and I wanted an easy way to start playing its Spotify playlist when we leave home. Since Apple only supports Music in the Home app, I created this plugin to be able to have a simple switch to start playing a specific playlist on a specific device using Spotify Connect API. I might improve it in the future, but for now this is what I needed.
-
-This is for my personal use, but I let the repo public if it could be of use to someone else. All the login logic is there for interacting with Spotify, you will find it in `src/spotify-api-wrapper.ts`. I made it easy to improve this plugin and add new features, PRs are the most welcome!
+The primary use case for me is that we have a little feather friend at home, and I wanted an easy way to start playing its Spotify playlist when we leave home. I might improve it in the future, but for now this is what I needed. I guess once Spotify will support Airplay 2, we will be able to play Spotify on the Homepod Mini, for example and this plugin won't have any purpose anymore. If you feel that something could be improved, PRs are the most welcome!
 
 ## Spotify Setup
 
 To use this plugin you must provide some authentication information to Spotify and those steps has to be done manually.
 
-1. Create a Spotify application
+1. Create a Spotify application in the developer's dashboard
     
     To do so, go to https://developer.spotify.com/dashboard and create an app. Once this is done you will have your clientId and clientSecret.
 
@@ -32,7 +30,7 @@ To use this plugin you must provide some authentication information to Spotify a
 
     - clientId is found at the step 1 in the developer dashboard.
     - scopes is a list of scopes separated with spaces.
-        - The basic scope needed for this app are `streaming user-read-email user-modify-playback-state user-read-private`.
+        - The basic scope needed for this app are `user-read-playback-state user-modify-playback-state user-read-currently-playing`.
 
     When you got the URL with the parameters filled, go to your browser and access it.
     - You will have a small agreement form, simply accept it.
@@ -42,8 +40,8 @@ To use this plugin you must provide some authentication information to Spotify a
     Example, you will get an URL that looks like the following. The code is everything that follows `code=`.
 
     https://example.com/callback?code=AQDPqT0ctdUm-uE2JRwbAoaWA-iRm0OuGY7wI17zQUlTxw7JfRma6id1mq-m8xKH6vJVNutJSqQcBrPZ__81uF-hrSJ-q_AX2yUEwERQKTnaPLDFCIE-c_qBjg81JSd5FqmEpJ5j9ddgKvkWUJ6WK5Kj-npTypCrUoQWRn9Vkn33DlYOfU7BxgPAPQBXQtqIfub3S576-gdUOGUAGPd6Ud5esSNMeI2lFKb-sj4eMiQJJJb35VI__EkRuFFJNCZkFagr3rBI-GGzfQA
-    ```
-    
+    ```  
+3. Take the code obtained at step #2 and put it in your homebridge `config.json` as the value of the attribute `spotifyAuthCode`. Once that is done, restart Homebridge and you should be up and running. Look at the logs for ay errors.
 
 For more details, see the [official auth documentation](https://developer.spotify.com/documentation/general/guides/authorization-guide/#authorization-code-flow)
 
