@@ -25,6 +25,9 @@ jobs:
       - name: Lint the project
         run: npm run lint
 
+      - name: Format the project
+        run: npm run format
+
       - name: Build the project
         run: npm run build
         env:

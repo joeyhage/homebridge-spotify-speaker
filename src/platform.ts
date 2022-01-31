@@ -1,4 +1,12 @@
-import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic } from 'homebridge';
+import {
+  API,
+  DynamicPlatformPlugin,
+  Logger,
+  PlatformAccessory,
+  PlatformConfig,
+  Service,
+  Characteristic,
+} from 'homebridge';
 
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
 // import { SpotifySmartSpeakerAccessory } from './spotify-smart-speaker-accessory';
@@ -11,11 +19,7 @@ export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
   public readonly spotifyApiWrapper: SpotifyApiWrapper;
   public readonly accessories: PlatformAccessory[] = [];
 
-  constructor(
-    public readonly log: Logger,
-    public readonly config: PlatformConfig,
-    public readonly api: API,
-  ) {
+  constructor(public readonly log: Logger, public readonly config: PlatformConfig, public readonly api: API) {
     this.log.debug('Finished initializing platform:', this.config.name);
 
     this.spotifyApiWrapper = new SpotifyApiWrapper(log, config, api);
@@ -42,7 +46,7 @@ export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
   discoverDevices() {
     for (const device of this.config.devices) {
       const uuid = this.api.hap.uuid.generate(device.spotifyDeviceId);
-      const existingAccessory = this.accessories.find(accessory => accessory.UUID === uuid);
+      const existingAccessory = this.accessories.find((accessory) => accessory.UUID === uuid);
 
       if (existingAccessory) {
         this.log.info('Restoring existing accessory from cache:', existingAccessory.displayName);

@@ -17,19 +17,9 @@ export class SpotifyApiWrapper {
 
   private spotifyApi: SpotifyWebApi;
 
-  constructor(
-    public readonly log: Logger,
-    public readonly config: PlatformConfig,
-    public readonly api: API,
-  ) {
-    if (
-      !config.spotifyClientId ||
-      !config.spotifyClientSecret ||
-      !config.spotifyAuthCode
-    ) {
-      this.log.error(
-        'Missing configuration for this plugin to work, see the documentation for initial setup',
-      );
+  constructor(public readonly log: Logger, public readonly config: PlatformConfig, public readonly api: API) {
+    if (!config.spotifyClientId || !config.spotifyClientSecret || !config.spotifyAuthCode) {
+      this.log.error('Missing configuration for this plugin to work, see the documentation for initial setup');
       throw new Error(SPOTIFY_MISSING_CONFIGURATION_ERROR);
     }
 
@@ -76,23 +66,20 @@ export class SpotifyApiWrapper {
     try {
       fs.writeFileSync(this.persistPath, writeData);
     } catch (err) {
-      this.log.warn('Failed to persist tokens, the plugin might not be able to authenticate when homebridge restarts:\n\n', err);
+      this.log.warn(
+        'Failed to persist tokens, the plugin might not be able to authenticate when homebridge restarts:\n\n',
+        err,
+      );
     }
   }
 
-  async play(
-    deviceId: string,
-    contextUri: string,
-    uris?: string,
-    offset?: number,
-    positionMs?: number,
-  ) {
+  async play(deviceId: string, contextUri: string, uris?: string, offset?: number, positionMs?: number) {
     const options = {
       device_id: deviceId,
       context_uri: contextUri,
-      ...(uris && {uris}),
-      ...(offset && {offset}),
-      ...(positionMs && {position_ms: positionMs}),
+      ...(uris && { uris }),
+      ...(offset && { offset }),
+      ...(positionMs && { position_ms: positionMs }),
     };
 
     await this.wrappedRequest(() => this.spotifyApi.play(options));
@@ -138,23 +125,19 @@ export class SpotifyApiWrapper {
 
     let tokens;
     try {
-      tokens = JSON.parse(
-        fs.readFileSync(this.persistPath, { encoding: 'utf-8' }),
-      );
+      tokens = JSON.parse(fs.readFileSync(this.persistPath, { encoding: 'utf-8' }));
     } catch (err) {
       this.log.debug('Failed to fetch tokens: ', err);
       return;
     }
 
-    if (!tokens.accessToken || ! tokens.refreshToken) {
+    if (!tokens.accessToken || !tokens.refreshToken) {
       return;
     }
 
     this.spotifyApi.setAccessToken(tokens.accessToken);
     this.spotifyApi.setRefreshToken(tokens.refreshToken);
-    this.log.debug(
-      'Successfully fetched the tokens from storage, going to refresh the access token',
-    );
+    this.log.debug('Successfully fetched the tokens from storage, going to refresh the access token');
 
     try {
       await this.refreshToken();

@@ -18,20 +18,18 @@ export class SpotifyFakeSpeakerAccessory {
     public readonly log: Logger,
   ) {
     this.service =
-      this.accessory.getService(
-        this.platform.Service.Lightbulb,
-      ) ||
-      this.accessory.addService(
-        this.platform.Service.Lightbulb,
-      );
+      this.accessory.getService(this.platform.Service.Lightbulb) ||
+      this.accessory.addService(this.platform.Service.Lightbulb);
 
     this.service.updateCharacteristic(this.platform.Characteristic.Name, this.device.deviceName);
 
-    this.service.getCharacteristic(this.platform.Characteristic.On)
+    this.service
+      .getCharacteristic(this.platform.Characteristic.On)
       .onGet(this.handleOnGet.bind(this))
       .onSet(this.handleOnSet.bind(this));
 
-    this.service.getCharacteristic(this.platform.Characteristic.Brightness)
+    this.service
+      .getCharacteristic(this.platform.Characteristic.Brightness)
       .onGet(this.handleBrightnessGet.bind(this))
       .onSet(this.handleBrightnessSet.bind(this));
 
@@ -61,7 +59,6 @@ export class SpotifyFakeSpeakerAccessory {
         this.service.updateCharacteristic(this.platform.Characteristic.Brightness, this.currentVolume);
       }
     }, SpotifyFakeSpeakerAccessory.DEFAULT_POLL_INTERVAL_MS);
-
   }
 
   handleOnGet(): boolean {
