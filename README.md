@@ -4,6 +4,8 @@
 
 # Homebridge Spotify Speaker
 
+[![npm version](https://img.shields.io/npm/v/@poblouin/homebridge-spotify-speaker)](https://www.npmjs.com/package/@poblouin/homebridge-spotify-speaker) [![npm downloads](https://img.shields.io/npm/dt/@poblouin/homebridge-spotify-speaker)](https://www.npmjs.com/package/@poblouin/homebridge-spotify-speaker) [![Build and Lint](https://github.com/poblouin/homebridge-spotify-speaker/actions/workflows/build.yml/badge.svg)](https://github.com/poblouin/homebridge-spotify-speaker/actions/workflows/build.yml)
+
 **Please read before using and facing any deceptions**
 
 The main purpose of this plugin is to expose a speaker in Homekit that is linked to a specific spotify device ID and that will play a specific playlist once activated. As of the current state, it is not a real speaker in Homekit, it's a lightbulb. A speaker accessory requires Airplay 2 and Spotify is not Airplay 2 compatible yet (will it ever be!?). With a lightbulb, you can toggle on/off the playlist and change the volume via the brightness setting.
