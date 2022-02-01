@@ -38,6 +38,14 @@
               "type": "string",
               "required": true
             },
+            "deviceType": {
+              "title": "Device Type",
+              "description": "Only speaker is supported for now. This tells the plugin to either use a lightbulb (speaker) or smart speaker in Homekit.",
+              "type": "string",
+              "required": false,
+              "default": "speaker",
+              "enum" : ["speaker"]
+            },
             "spotifyDeviceId": {
               "title": "Spotify Device ID",
               "description": "The Spotify Device ID. You can find a list of available device in the plugin's logs when it starts or see the README",
