@@ -44,7 +44,7 @@
               "type": "string",
               "required": false,
               "default": "speaker",
-              "enum" : ["speaker"]
+              "enum": ["speaker"]
             },
             "deviceStartVolume": {
               "title": "Device Start Volume",
