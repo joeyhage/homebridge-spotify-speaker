@@ -93,6 +93,10 @@ export class SpotifyApiWrapper {
     return this.wrappedRequest(() => this.spotifyApi.getMyCurrentPlaybackState());
   }
 
+  async setShuffle(state: boolean, deviceId: string) {
+    await this.wrappedRequest(() => this.spotifyApi.setShuffle(state, { device_id: deviceId }));
+  }
+
   async setVolume(volume: number, deviceId: string) {
     await this.wrappedRequest(() => this.spotifyApi.setVolume(volume, { device_id: deviceId }));
   }
