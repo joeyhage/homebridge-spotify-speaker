@@ -124,7 +124,7 @@ export class SpotifySmartSpeakerAccessory {
       this.currentVolume = state.body.device.volume_percent;
     } else if (state.statusCode === 204) {
       this.currentMediaState = this.platform.Characteristic.CurrentMediaState.STOP;
-      this.currentVolume = this.device.deviceStartVolume || 0;
+      this.currentVolume = 0;
     }
 
     this.service.getCharacteristic(this.platform.Characteristic.CurrentMediaState).updateValue(this.currentMediaState);

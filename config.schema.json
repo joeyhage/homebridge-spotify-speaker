@@ -46,12 +46,6 @@
               "default": "speaker",
               "enum": ["speaker"]
             },
-            "deviceStartVolume": {
-              "title": "Device Start Volume",
-              "describe": "The volume that will be set when the device will be triggered",
-              "type": "number",
-              "required": false
-            },
             "spotifyDeviceId": {
               "title": "Spotify Device ID",
               "description": "The Spotify Device ID. You can find a list of available device in the plugin's logs when it starts or see the README",

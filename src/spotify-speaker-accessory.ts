@@ -105,7 +105,7 @@ export class SpotifyFakeSpeakerAccessory {
       this.currentVolume = state.body.device.volume_percent;
     } else if (state.statusCode === 204) {
       this.activeState = false;
-      this.currentVolume = this.device.deviceStartVolume || 0;
+      this.currentVolume = 0;
     }
 
     this.log.debug(`Set initial state // active ${this.activeState} // volume ${this.currentVolume}`);
