@@ -4,6 +4,7 @@
   "version": "0.0.1-beta",
   "description": "Homebridge plugin that creates a speaker that plays a specific Spotify playlist",
   "license": "MIT",
+  "author": "Pierre-Olivier Blouin <poblouin@pm.me>",
   "repository": {
     "type": "git",
     "url": "git://github.com:poblouin/homebridge-spotify-speaker.git"
