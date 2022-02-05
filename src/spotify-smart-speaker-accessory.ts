@@ -68,7 +68,7 @@ export class SpotifySmartSpeakerAccessory {
       }
     }, SpotifySmartSpeakerAccessory.DEFAULT_POLL_INTERVAL_MS);
 
-    setInterval(() => this.platform.spotifyApiWrapper.refreshToken(), SpotifySmartSpeakerAccessory.DAY_INTERVAL);
+    setInterval(() => this.platform.spotifyApiWrapper.refreshTokens(), SpotifySmartSpeakerAccessory.DAY_INTERVAL);
   }
 
   handleCurrentMediaStateGet(): number {

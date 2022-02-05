@@ -12,7 +12,6 @@ import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
 import { SpotifySmartSpeakerAccessory } from './spotify-smart-speaker-accessory';
 import { SpotifyFakeSpeakerAccessory } from './spotify-speaker-accessory';
 import { SpotifyApiWrapper } from './spotify-api-wrapper';
-import { SPOTIFY_MISSING_CONFIGURATION_ERROR } from './constants';
 
 const DEVICE_CLASS_CONFIG_MAP = {
   speaker: SpotifyFakeSpeakerAccessory,
@@ -27,12 +26,21 @@ export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
   constructor(public readonly log: Logger, public readonly config: PlatformConfig, public readonly api: API) {
     this.log.debug('Finished initializing platform:', this.config.name);
 
+    if (!config.spotifyClientId || !config.spotifyClientSecret || !config.spotifyAuthCode) {
+      this.log.error('Missing configuration for this plugin to work, see the documentation for initial setup');
+      return;
+    }
+
     this.spotifyApiWrapper = new SpotifyApiWrapper(log, config, api);
 
     this.api.on('didFinishLaunching', async () => {
       log.debug('Executed didFinishLaunching callback');
 
-      await this.spotifyApiWrapper.authenticate();
+      const isAuthenticated = await this.spotifyApiWrapper.authenticate();
+      if (!isAuthenticated) {
+        return;
+      }
+
       this.logAvailableSpotifyDevices();
       this.discoverDevices();
     });
@@ -51,6 +59,10 @@ export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
   discoverDevices() {
     for (const device of this.config.devices) {
       const deviceClass = this.getDeviceConstructor(device.deviceType);
+      if (!deviceClass) {
+        continue;
+      }
+
       const uuid = this.api.hap.uuid.generate(device.spotifyDeviceId);
       const existingAccessory = this.accessories.find((accessory) => accessory.UUID === uuid);
 
@@ -73,16 +85,16 @@ export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
     }
   }
 
-  private getDeviceConstructor(deviceType) {
+  private getDeviceConstructor(deviceType): typeof SpotifySmartSpeakerAccessory | typeof SpotifyFakeSpeakerAccessory| null {
     if (!deviceType) {
       this.log.error('It is missing the `deviceType` in the configuration.');
-      throw new Error(SPOTIFY_MISSING_CONFIGURATION_ERROR);
+      return null;
     }
 
     return DEVICE_CLASS_CONFIG_MAP[deviceType];
   }
 
-  private async logAvailableSpotifyDevices() {
+  private async logAvailableSpotifyDevices(): Promise<void> {
     const spotifyDevices = await this.spotifyApiWrapper.getMyDevices();
     this.log.info('Available Spotify devices', spotifyDevices);
   }

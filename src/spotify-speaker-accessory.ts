@@ -61,7 +61,7 @@ export class SpotifyFakeSpeakerAccessory {
       }
     }, SpotifyFakeSpeakerAccessory.DEFAULT_POLL_INTERVAL_MS);
 
-    setInterval(() => this.platform.spotifyApiWrapper.refreshToken(), SpotifyFakeSpeakerAccessory.DAY_INTERVAL);
+    setInterval(() => this.platform.spotifyApiWrapper.refreshTokens(), SpotifyFakeSpeakerAccessory.DAY_INTERVAL);
   }
 
   handleOnGet(): boolean {
