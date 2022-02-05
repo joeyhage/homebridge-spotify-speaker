@@ -72,9 +72,12 @@ export class SpotifyFakeSpeakerAccessory {
       return;
     }
 
-    value
-      ? this.platform.spotifyApiWrapper.play(this.device.spotifyDeviceId, this.device.spotifyPlaylistId)
-      : this.platform.spotifyApiWrapper.pause(this.device.spotifyDeviceId);
+    if (value) {
+      this.platform.spotifyApiWrapper.play(this.device.spotifyDeviceId, this.device.spotifyPlaylistId);
+      this.platform.spotifyApiWrapper.setShuffle(true, this.device.spotifyDeviceId);
+    } else {
+      this.platform.spotifyApiWrapper.pause(this.device.spotifyDeviceId);
+    }
 
     this.activeState = value;
   }
@@ -95,7 +98,6 @@ export class SpotifyFakeSpeakerAccessory {
   }
 
   private async setInitialState(): Promise<void> {
-    this.log.debug('Set initial state');
     const state = await this.platform.spotifyApiWrapper.getPlaybackState();
 
     if (state.statusCode === 200) {
@@ -103,9 +105,10 @@ export class SpotifyFakeSpeakerAccessory {
       this.currentVolume = state.body.device.volume_percent;
     } else if (state.statusCode === 204) {
       this.activeState = false;
-      this.currentVolume = 0;
+      this.currentVolume = this.device.deviceStartVolume || 0;
     }
 
+    this.log.debug(`Set initial state // active ${this.activeState} // volume ${this.currentVolume}`);
     this.service.getCharacteristic(this.platform.Characteristic.On).updateValue(this.activeState);
     this.service.getCharacteristic(this.platform.Characteristic.Brightness).updateValue(this.currentVolume);
   }

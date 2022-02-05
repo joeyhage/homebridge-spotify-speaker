@@ -10,6 +10,7 @@
       "devices": [
         {
           "deviceName": "A Speaker",
+          "deviceStartVolume": 50,
           "spotifyDeviceId": "...",
           "spotifyPlaylistId": "..."
         }
