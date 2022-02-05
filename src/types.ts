@@ -1,6 +1,6 @@
 export interface HomebridgeSpotifySpeakerDevice {
   deviceName: string;
-  deviceStartVolume: number;
+  deviceType: string;
   spotifyDeviceId: string;
   spotifyPlaylistId: string;
 }

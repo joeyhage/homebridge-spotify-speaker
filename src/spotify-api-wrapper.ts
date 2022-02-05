@@ -3,14 +3,9 @@ import fs from 'fs';
 import { API, Logger, PlatformConfig } from 'homebridge';
 import SpotifyWebApi from 'spotify-web-api-node';
 
-import {
-  DEFAULT_SPOTIFY_CALLBACK,
-  SPOTIFY_AUTH_ERROR,
-  SPOTIFY_MISSING_CONFIGURATION_ERROR,
-  SPOTIFY_REFRESH_TOKEN_ERROR,
-} from './constants';
 import { SpotifyPlaybackState, WebapiError } from './types';
 
+const DEFAULT_SPOTIFY_CALLBACK = 'https://example.com/callback';
 export class SpotifyApiWrapper {
   private readonly authCode: string;
   private readonly persistPath: string;
@@ -18,11 +13,6 @@ export class SpotifyApiWrapper {
   private spotifyApi: SpotifyWebApi;
 
   constructor(public readonly log: Logger, public readonly config: PlatformConfig, public readonly api: API) {
-    if (!config.spotifyClientId || !config.spotifyClientSecret || !config.spotifyAuthCode) {
-      this.log.error('Missing configuration for this plugin to work, see the documentation for initial setup');
-      throw new Error(SPOTIFY_MISSING_CONFIGURATION_ERROR);
-    }
-
     this.authCode = config.spotifyAuthCode;
     this.persistPath = `${api.user.persistPath()}/.homebridge-spotify-speaker`;
 
@@ -33,24 +23,25 @@ export class SpotifyApiWrapper {
     });
   }
 
-  async authenticate() {
+  async authenticate(): Promise<boolean> {
     await this.fetchTokensFromStorage();
     if (this.spotifyApi.getAccessToken()) {
       this.log.debug('Spotify auth success using saved tokens');
-      return;
+      return true;
     }
 
     await this.authWithCodeGrant();
     if (this.spotifyApi.getAccessToken()) {
       this.log.debug('Spotify auth success using authorization code flow');
-      return;
+      return true;
     }
 
     this.log.error(
       `We could not fetch the Spotify tokens nor authenticate using the code grant flow.
         Please redo the manual login step, provide the new auth code in the config then try again.`,
     );
-    throw new Error(SPOTIFY_AUTH_ERROR);
+
+    return false;
   }
 
   persistTokens() {
@@ -111,7 +102,7 @@ export class SpotifyApiWrapper {
     }
   }
 
-  private async authWithCodeGrant() {
+  private async authWithCodeGrant(): Promise<void> {
     this.log.debug('Attempting the code grant authorization flow');
 
     try {
@@ -120,7 +111,6 @@ export class SpotifyApiWrapper {
       this.spotifyApi.setRefreshToken(data.body['refresh_token']);
     } catch (err) {
       this.log.error('Could not authorize Spotify:\n\n', err);
-      throw new Error(SPOTIFY_AUTH_ERROR);
     }
   }
 
@@ -143,16 +133,15 @@ export class SpotifyApiWrapper {
     this.spotifyApi.setRefreshToken(tokens.refreshToken);
     this.log.debug('Successfully fetched the tokens from storage, going to refresh the access token');
 
-    try {
-      await this.refreshToken();
-    } catch {
+    const areTokensRefreshed = await this.refreshTokens();
+    if (!areTokensRefreshed) {
       // Reset the creds since they are wrong, we will try the code auth grant instead.
       this.spotifyApi.resetCredentials();
     }
   }
 
   // TODO: Implement retries, it failed me once.
-  async refreshToken() {
+  async refreshTokens(): Promise<boolean> {
     try {
       const data = await this.spotifyApi.refreshAccessToken();
       this.log.debug('The access token has been refreshed!');
@@ -161,8 +150,10 @@ export class SpotifyApiWrapper {
       this.persistTokens();
     } catch (err) {
       this.log.debug('Could not refresh access token: ', err);
-      throw new Error(SPOTIFY_REFRESH_TOKEN_ERROR);
+      return false;
     }
+
+    return true;
   }
 
   // TODO: Use decorator or prettier pattern.
@@ -174,11 +165,13 @@ export class SpotifyApiWrapper {
       if ((error as WebapiError).statusCode === 401) {
         this.log.debug('Access token has expired, attempting token refresh');
 
-        await this.refreshToken();
-        return cb();
+        const areTokensRefreshed = await this.refreshTokens();
+        if (areTokensRefreshed) {
+          return cb();
+        }
       }
 
-      throw error;
+      this.log.error('Unexpected error when making a request to Spotify:', error);
     }
   }
 }

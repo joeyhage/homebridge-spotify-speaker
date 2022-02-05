@@ -11,7 +11,7 @@
     "strict": true,
     "esModuleInterop": true,
     "noImplicitAny": false,
-    "experimentalDecorators": true
+    "strictPropertyInitialization": false
   },
   "include": ["src/"],
   "exclude": ["**/*.spec.ts"]
