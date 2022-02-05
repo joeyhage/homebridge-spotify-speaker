@@ -76,7 +76,7 @@ export class SpotifyFakeSpeakerAccessory {
     }
 
     if (value) {
-      this.platform.spotifyApiWrapper.play(this.device.spotifyDeviceId, this.device.spotifyPlaylistId);
+      await this.platform.spotifyApiWrapper.play(this.device.spotifyDeviceId, this.device.spotifyPlaylistId);
       this.platform.spotifyApiWrapper.setShuffle(true, this.device.spotifyDeviceId);
     } else {
       this.platform.spotifyApiWrapper.pause(this.device.spotifyDeviceId);
