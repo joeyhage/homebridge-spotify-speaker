@@ -1,5 +1,7 @@
 # Ignore source code
 src
+config.dev.json
+TEMPLATE_README.md
 
 # ------------- Defaults ------------- #
 
@@ -8,6 +10,7 @@ src
 
 # eslint
 .eslintrc
+.prettierrc
 
 # typescript
 tsconfig.json
