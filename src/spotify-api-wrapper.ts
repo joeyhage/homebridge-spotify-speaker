@@ -86,8 +86,7 @@ export class SpotifyApiWrapper {
   }
 
   async pause(deviceId: string) {
-    const resp = await this.wrappedRequest(() => this.spotifyApi.pause({ device_id: deviceId }));
-    this.log.debug('Play request', resp);
+    await this.wrappedRequest(() => this.spotifyApi.pause({ device_id: deviceId }));
   }
 
   async getPlaybackState(): Promise<SpotifyPlaybackState> {
