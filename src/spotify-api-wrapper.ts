@@ -157,18 +157,21 @@ export class SpotifyApiWrapper {
 
   private async wrappedRequest<T>(cb: () => Promise<T>): Promise<T | undefined> {
     try {
-      return cb();
+      const response = await cb();
+      return response;
     } catch (error: unknown) {
-      if ((error as WebapiError).statusCode === 401) {
+      const isWebApiError = Object.getPrototypeOf((error as any).constructor).name === 'WebapiError';
+
+      if (isWebApiError && (error as WebapiError).statusCode === 401) {
         this.log.debug('Access token has expired, attempting token refresh');
 
         const areTokensRefreshed = await this.refreshTokens();
         if (areTokensRefreshed) {
-          return cb();
+          this.wrappedRequest(cb);
         }
       }
 
-      this.log.error('Unexpected error when making a request to Spotify:', error);
+      this.log.error('Unexpected error when making a request to Spotify:', (error as WebapiError).body);
     }
   }
 }
