@@ -3,7 +3,7 @@ import { Service, PlatformAccessory, Logger, Categories } from 'homebridge';
 import { HomebridgeSpotifySpeakerPlatform } from './platform';
 import { HomebridgeSpotifySpeakerDevice } from './types';
 
-export class SpotifyFakeSpeakerAccessory {
+export class SpotifySpeakerAccessory {
   private static DEFAULT_POLL_INTERVAL_MS = 20 * 1000;
   private static DAY_INTERVAL = 60 * 60 * 24 * 1000;
   private service: Service;
@@ -40,18 +40,10 @@ export class SpotifyFakeSpeakerAccessory {
     this.setInitialState();
 
     setInterval(async () => {
-      const state = await this.platform.spotifyApiWrapper.getPlaybackState();
-
       const oldActiveState = this.activeState;
       const oldVolume = this.currentVolume;
 
-      if (state.statusCode === 200) {
-        this.activeState = state.body.is_playing;
-        this.currentVolume = state.body.device.volume_percent;
-      } else if (state.statusCode === 204) {
-        this.activeState = false;
-        this.currentVolume = 0;
-      }
+      await this.setCurrentStates();
 
       if (oldActiveState !== this.activeState) {
         this.service.getCharacteristic(this.platform.Characteristic.On).updateValue(this.activeState);
@@ -59,9 +51,9 @@ export class SpotifyFakeSpeakerAccessory {
       if (oldVolume !== this.currentVolume) {
         this.service.updateCharacteristic(this.platform.Characteristic.Brightness, this.currentVolume);
       }
-    }, SpotifyFakeSpeakerAccessory.DEFAULT_POLL_INTERVAL_MS);
+    }, SpotifySpeakerAccessory.DEFAULT_POLL_INTERVAL_MS);
 
-    setInterval(() => this.platform.spotifyApiWrapper.refreshTokens(), SpotifyFakeSpeakerAccessory.DAY_INTERVAL);
+    setInterval(() => this.platform.spotifyApiWrapper.refreshTokens(), SpotifySpeakerAccessory.DAY_INTERVAL);
   }
 
   handleOnGet(): boolean {
@@ -101,18 +93,22 @@ export class SpotifyFakeSpeakerAccessory {
   }
 
   private async setInitialState(): Promise<void> {
-    const state = await this.platform.spotifyApiWrapper.getPlaybackState();
-
-    if (state.statusCode === 200) {
-      this.activeState = state.body.is_playing;
-      this.currentVolume = state.body.device.volume_percent;
-    } else if (state.statusCode === 204) {
-      this.activeState = false;
-      this.currentVolume = 0;
-    }
+    await this.setCurrentStates();
 
     this.log.debug(`Set initial state // active ${this.activeState} // volume ${this.currentVolume}`);
     this.service.getCharacteristic(this.platform.Characteristic.On).updateValue(this.activeState);
     this.service.getCharacteristic(this.platform.Characteristic.Brightness).updateValue(this.currentVolume);
+  }
+
+  private async setCurrentStates() {
+    const state = await this.platform.spotifyApiWrapper.getPlaybackState();
+
+    if (state?.statusCode === 200) {
+      this.activeState = state.body.is_playing;
+      this.currentVolume = state.body.device.volume_percent;
+    } else if (!state || state.statusCode === 204) {
+      this.activeState = false;
+      this.currentVolume = 0;
+    }
   }
 }
