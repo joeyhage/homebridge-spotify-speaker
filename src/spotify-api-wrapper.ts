@@ -160,6 +160,7 @@ export class SpotifyApiWrapper {
       const response = await cb();
       return response;
     } catch (error: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const isWebApiError = Object.getPrototypeOf((error as any).constructor).name === 'WebapiError';
 
       if (isWebApiError && (error as WebapiError).statusCode === 401) {
