@@ -147,8 +147,8 @@ export class SpotifyApiWrapper {
 
       this.spotifyApi.setAccessToken(data.body['access_token']);
       this.persistTokens();
-    } catch (err) {
-      this.log.debug('Could not refresh access token: ', err);
+    } catch (error: unknown) {
+      this.log.debug('Could not refresh access token: ', (error as WebapiError).body);
       return false;
     }
 
