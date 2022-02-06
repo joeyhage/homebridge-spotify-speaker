@@ -172,7 +172,8 @@ export class SpotifyApiWrapper {
         }
       }
 
-      this.log.error('Unexpected error when making a request to Spotify:', (error as WebapiError).body);
+      const errorMessage = isWebApiError ? (error as WebapiError).body : error;
+      this.log.error('Unexpected error when making a request to Spotify:', errorMessage);
     }
   }
 }
