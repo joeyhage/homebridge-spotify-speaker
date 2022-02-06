@@ -80,7 +80,7 @@ export class SpotifyApiWrapper {
     await this.wrappedRequest(() => this.spotifyApi.pause({ device_id: deviceId }));
   }
 
-  async getPlaybackState(): Promise<SpotifyPlaybackState> {
+  async getPlaybackState(): Promise<SpotifyPlaybackState | undefined> {
     return this.wrappedRequest(() => this.spotifyApi.getMyCurrentPlaybackState());
   }
 
@@ -140,7 +140,6 @@ export class SpotifyApiWrapper {
     }
   }
 
-  // TODO: Implement retries, it failed me once.
   async refreshTokens(): Promise<boolean> {
     try {
       const data = await this.spotifyApi.refreshAccessToken();
@@ -148,30 +147,33 @@ export class SpotifyApiWrapper {
 
       this.spotifyApi.setAccessToken(data.body['access_token']);
       this.persistTokens();
-    } catch (err) {
-      this.log.debug('Could not refresh access token: ', err);
+    } catch (error: unknown) {
+      this.log.debug('Could not refresh access token: ', (error as WebapiError).body);
       return false;
     }
 
     return true;
   }
 
-  // TODO: Use decorator or prettier pattern.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private async wrappedRequest(cb: () => Promise<any>) {
+  private async wrappedRequest<T>(cb: () => Promise<T>): Promise<T | undefined> {
     try {
-      return cb();
+      const response = await cb();
+      return response;
     } catch (error: unknown) {
-      if ((error as WebapiError).statusCode === 401) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const isWebApiError = Object.getPrototypeOf((error as any).constructor).name === 'WebapiError';
+
+      if (isWebApiError && (error as WebapiError).statusCode === 401) {
         this.log.debug('Access token has expired, attempting token refresh');
 
         const areTokensRefreshed = await this.refreshTokens();
         if (areTokensRefreshed) {
-          return cb();
+          return this.wrappedRequest(cb);
         }
       }
 
-      this.log.error('Unexpected error when making a request to Spotify:', error);
+      const errorMessage = isWebApiError ? (error as WebapiError).body : error;
+      this.log.error('Unexpected error when making a request to Spotify:', errorMessage);
     }
   }
 }
