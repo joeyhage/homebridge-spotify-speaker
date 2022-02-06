@@ -3,6 +3,13 @@ import { Service, PlatformAccessory, Logger, Categories } from 'homebridge';
 import { HomebridgeSpotifySpeakerPlatform } from './platform';
 import { HomebridgeSpotifySpeakerDevice } from './types';
 
+
+/**
+ * This class is meant to be used with an Airplay speaker, but
+ * that is not implemented yet. I'm not sure if it will ever be
+ * at this point because I don't think I can connect librespot
+ * to an Airplay compatible speaker and make this work. TBD.
+ */
 export class SpotifySmartSpeakerAccessory {
   private static DEFAULT_POLL_INTERVAL_MS = 20 * 1000;
   private static DAY_INTERVAL = 60 * 60 * 24 * 1000;
@@ -47,18 +54,10 @@ export class SpotifySmartSpeakerAccessory {
     this.setInitialState();
 
     setInterval(async () => {
-      const state = await this.platform.spotifyApiWrapper.getPlaybackState();
-
       const oldMediaState = this.currentMediaState;
       const oldVolume = this.currentVolume;
 
-      if (state.statusCode === 200) {
-        this.currentMediaState = this.getMediaState(state.body.is_playing);
-        this.currentVolume = state.body.device.volume_percent;
-      } else if (state.statusCode === 204) {
-        this.currentMediaState = this.platform.Characteristic.CurrentMediaState.STOP;
-        this.currentVolume = 0;
-      }
+      await this.setCurrentStates();
 
       if (oldMediaState !== this.currentMediaState) {
         this.service.updateCharacteristic(this.platform.Characteristic.CurrentMediaState, this.currentMediaState);
@@ -119,18 +118,22 @@ export class SpotifySmartSpeakerAccessory {
   }
 
   private async setInitialState(): Promise<void> {
-    this.log.debug('Set initial state');
+    await this.setCurrentStates();
+
+    this.log.debug(`Set initial state // active ${this.currentMediaState} // volume ${this.currentVolume}`);
+    this.service.getCharacteristic(this.platform.Characteristic.CurrentMediaState).updateValue(this.currentMediaState);
+    this.service.getCharacteristic(this.platform.Characteristic.Volume).updateValue(this.currentVolume);
+  }
+
+  private async setCurrentStates() {
     const state = await this.platform.spotifyApiWrapper.getPlaybackState();
 
-    if (state.statusCode === 200) {
+    if (state?.statusCode === 200) {
       this.currentMediaState = this.getMediaState(state.body.is_playing);
       this.currentVolume = state.body.device.volume_percent;
-    } else if (state.statusCode === 204) {
+    } else if (!state || state.statusCode === 204) {
       this.currentMediaState = this.platform.Characteristic.CurrentMediaState.STOP;
       this.currentVolume = 0;
     }
-
-    this.service.getCharacteristic(this.platform.Characteristic.CurrentMediaState).updateValue(this.currentMediaState);
-    this.service.getCharacteristic(this.platform.Characteristic.Volume).updateValue(this.currentVolume);
   }
 }

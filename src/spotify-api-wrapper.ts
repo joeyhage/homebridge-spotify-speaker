@@ -80,7 +80,7 @@ export class SpotifyApiWrapper {
     await this.wrappedRequest(() => this.spotifyApi.pause({ device_id: deviceId }));
   }
 
-  async getPlaybackState(): Promise<SpotifyPlaybackState> {
+  async getPlaybackState(): Promise<SpotifyPlaybackState | undefined> {
     return this.wrappedRequest(() => this.spotifyApi.getMyCurrentPlaybackState());
   }
 
@@ -140,7 +140,6 @@ export class SpotifyApiWrapper {
     }
   }
 
-  // TODO: Implement retries, it failed me once.
   async refreshTokens(): Promise<boolean> {
     try {
       const data = await this.spotifyApi.refreshAccessToken();
@@ -156,9 +155,7 @@ export class SpotifyApiWrapper {
     return true;
   }
 
-  // TODO: Use decorator or prettier pattern.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private async wrappedRequest(cb: () => Promise<any>) {
+  private async wrappedRequest<T>(cb: () => Promise<T>): Promise<T | undefined> {
     try {
       return cb();
     } catch (error: unknown) {
