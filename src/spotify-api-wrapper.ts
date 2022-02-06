@@ -167,7 +167,7 @@ export class SpotifyApiWrapper {
 
         const areTokensRefreshed = await this.refreshTokens();
         if (areTokensRefreshed) {
-          this.wrappedRequest(cb);
+          return this.wrappedRequest(cb);
         }
       }
 
