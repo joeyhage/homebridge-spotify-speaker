@@ -100,7 +100,9 @@ export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
     const spotifyDevices = await this.spotifyApiWrapper.getMyDevices();
 
     if (spotifyDevices.length === 0) {
-      this.log.warn('No available spotify devices found, make sure that the speaker you configured is On and visible by Spotify Connect');
+      this.log.warn(
+        'No available spotify devices found, make sure that the speaker you configured is On and visible by Spotify Connect',
+      );
     } else {
       this.log.info('Available Spotify devices', spotifyDevices);
     }

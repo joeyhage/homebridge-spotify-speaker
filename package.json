@@ -18,12 +18,13 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "lint": "eslint src/**.ts --max-warnings=0",
-    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
-    "watch": "npm run build && npm link && nodemon",
     "build": "rimraf ./dist && tsc",
+    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
+    "lint": "eslint src/**.ts --max-warnings=0",
+    "pre-commit": "lint-staged",
+    "prepare": "husky install",
     "prepublishOnly": "npm run lint && npm run format && npm run build",
-    "prepare": "husky install"
+    "watch": "npm run build && npm link && nodemon"
   },
   "keywords": [
     "homebridge-plugin",
@@ -43,6 +44,7 @@
     "eslint-config-prettier": "^8.3.0",
     "homebridge": "^1.3.5",
     "husky": "^7.0.4",
+    "lint-staged": "^12.3.3",
     "nodemon": "^2.0.13",
     "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
