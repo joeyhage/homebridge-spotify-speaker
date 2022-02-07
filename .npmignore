@@ -12,6 +12,7 @@ TEMPLATE_README.md
 .eslintrc
 .prettierrc
 .lintstagedrc
+.husky
 
 # typescript
 tsconfig.json
