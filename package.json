@@ -18,12 +18,13 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "lint": "eslint src/**.ts --max-warnings=0",
-    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
-    "watch": "npm run build && npm link && nodemon",
     "build": "rimraf ./dist && tsc",
+    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
+    "lint": "eslint src/**.ts --max-warnings=0",
+    "pre-commit": "lint-staged",
+    "prepare": "husky install",
     "prepublishOnly": "npm run lint && npm run format && npm run build",
-    "prepare": "husky install"
+    "watch": "npm run build && npm link && nodemon"
   },
   "keywords": [
     "homebridge-plugin",
