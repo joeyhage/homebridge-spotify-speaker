@@ -63,7 +63,7 @@ export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
         continue;
       }
 
-      const uuid = this.api.hap.uuid.generate(device.spotifyDeviceId);
+      const uuid = this.api.hap.uuid.generate(`${device.deviceName}-${device.spotifyDeviceId}`);
       const existingAccessory = this.accessories.find((accessory) => accessory.UUID === uuid);
 
       if (existingAccessory) {
