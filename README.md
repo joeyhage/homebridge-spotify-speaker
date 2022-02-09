@@ -12,6 +12,14 @@ The main purpose of this plugin is to expose a speaker in Homekit that is linked
 
 The primary use case for me is that we have a little feather friend at home, and I wanted an easy way to start playing its Spotify playlist when we leave home. I might improve it in the future, but for now this is what I needed. I guess once Spotify will support Airplay 2, we will be able to play Spotify on the Homepod Mini, for example and this plugin won't have any purpose anymore. If you feel that something could be improved, PRs are the most welcome!
 
+## Speaker setup
+
+The speaker itself only need to be Spotify connect compatible. Either natively or you can use a library to make a speaker compatible. I personally use a bluetooth speaker hooked up to a Raspberry pi and I use [Raspotify](https://github.com/dtcooper/raspotify).
+
+## Warning about the volume
+
+This is Homekit's behaviour to set back the brightness to 100% when a device is shut down. There is nothing I can do about it unfortunately. So to make sure that you don't turn on your speaker with the volume set to 100%, use a scene to toggle on the speaker and set the default volume (brightness) in there.
+
 ## Spotify Setup
 
 To use this plugin you must provide some authentication information to Spotify and those steps has to be done manually.
