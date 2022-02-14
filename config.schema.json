@@ -52,9 +52,9 @@
               "type": "string",
               "required": true
             },
-            "spotifyPlaylistId": {
-              "title": "Spotify Playlist ID",
-              "description": "The ID of the Spotify playlist that you want to play when this device will be set to ON in Homekit.",
+            "spotifyPlaylistUrl": {
+              "title": "Spotify Playlist URL",
+              "description": "The URL of the Spotify playlist that you want to play when this device will be set to ON in Homekit.",
               "type": "string",
               "required": true
             }
