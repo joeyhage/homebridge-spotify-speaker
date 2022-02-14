@@ -20,7 +20,7 @@ export class SpotifySpeakerAccessory {
   ) {
     this.service =
       this.accessory.getService(this.platform.Service.Lightbulb) ||
-      this.accessory.addService(this.platform.Service.Lightbulb);
+      this.accessory.addService(this.platform.Service.Lightbulb, this.device.deviceName);
 
     this.service.updateCharacteristic(this.platform.Characteristic.Name, this.device.deviceName);
 
@@ -68,7 +68,7 @@ export class SpotifySpeakerAccessory {
     }
 
     if (value) {
-      await this.platform.spotifyApiWrapper.play(this.device.spotifyDeviceId, this.device.spotifyPlaylistId);
+      await this.platform.spotifyApiWrapper.play(this.device.spotifyDeviceId, this.device.spotifyPlaylistUrl);
       this.platform.spotifyApiWrapper.setShuffle(true, this.device.spotifyDeviceId);
     } else {
       this.platform.spotifyApiWrapper.pause(this.device.spotifyDeviceId);
@@ -102,6 +102,12 @@ export class SpotifySpeakerAccessory {
 
   private async setCurrentStates() {
     const state = await this.platform.spotifyApiWrapper.getPlaybackState();
+
+    // Make sure that this accessory is the one playing i.e. the playlist ID
+    // playing is the one from this accessory.
+    if (!state?.body?.context?.href?.includes(this.accessory.context.playlistId)) {
+      return;
+    }
 
     if (state?.statusCode === 200) {
       this.activeState = state.body.is_playing;

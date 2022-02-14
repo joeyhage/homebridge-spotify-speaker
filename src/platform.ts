@@ -7,6 +7,7 @@ import {
   Service,
   Characteristic,
 } from 'homebridge';
+import { URL } from 'url';
 
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
 import { SpotifySmartSpeakerAccessory } from './spotify-smart-speaker-accessory';
@@ -65,11 +66,13 @@ export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
 
       const uuid = this.api.hap.uuid.generate(`${device.deviceName}-${device.spotifyDeviceId}`);
       const existingAccessory = this.accessories.find((accessory) => accessory.UUID === uuid);
+      const playlistId = this.extractPlaylistId(device.spotifyPlaylistUrl);
 
       if (existingAccessory) {
         this.log.info('Restoring existing accessory from cache:', existingAccessory.displayName);
 
         existingAccessory.context.device = device;
+        existingAccessory.context.playlistId = playlistId;
         this.api.updatePlatformAccessories([existingAccessory]);
 
         new deviceClass(this, existingAccessory, device, this.log);
@@ -78,10 +81,28 @@ export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
 
         const accessory = new this.api.platformAccessory(device.deviceName, uuid, deviceClass.CATEGORY);
         accessory.context.device = device;
+        accessory.context.playlistId = playlistId;
 
         new deviceClass(this, accessory, device, this.log);
         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
       }
+    }
+  }
+
+  private extractPlaylistId(playlistUrl: string): string | null {
+    try {
+      const url = new URL(playlistUrl);
+      const playlistId = url.pathname.split('/')[2];
+      this.log.debug(`Found playlistId: ${playlistId}`);
+
+      return playlistId;
+    } catch (error) {
+      this.log.error(
+        `Failed to extract playlist ID, the plugin might behave in an unexpected way.
+        Please check the configuration and provide a valid playlist URL`,
+      );
+
+      return null;
     }
   }
 
