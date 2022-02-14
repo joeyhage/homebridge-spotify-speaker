@@ -27,7 +27,7 @@ export class SpotifySmartSpeakerAccessory {
   ) {
     this.service =
       this.accessory.getService(this.platform.Service.SmartSpeaker) ||
-      this.accessory.addService(this.platform.Service.SmartSpeaker);
+      this.accessory.addService(this.platform.Service.SmartSpeaker, this.device.deviceName);
 
     this.service.updateCharacteristic(this.platform.Characteristic.Name, this.device.deviceName);
     this.service.updateCharacteristic(this.platform.Characteristic.ConfiguredName, this.device.deviceName);
@@ -84,7 +84,7 @@ export class SpotifySmartSpeakerAccessory {
 
     switch (value) {
       case this.platform.Characteristic.CurrentMediaState.PLAY:
-        await this.platform.spotifyApiWrapper.play(this.device.spotifyDeviceId, this.device.spotifyPlaylistId);
+        await this.platform.spotifyApiWrapper.play(this.device.spotifyDeviceId, this.device.spotifyPlaylistUrl);
         break;
       case this.platform.Characteristic.CurrentMediaState.PAUSE:
       case this.platform.Characteristic.CurrentMediaState.STOP:
