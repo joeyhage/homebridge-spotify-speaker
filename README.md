@@ -4,6 +4,7 @@
 
 # Homebridge Spotify Speaker
 
+[![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
 [![npm version](https://img.shields.io/npm/v/@poblouin/homebridge-spotify-speaker)](https://www.npmjs.com/package/@poblouin/homebridge-spotify-speaker) [![npm downloads](https://img.shields.io/npm/dt/@poblouin/homebridge-spotify-speaker)](https://www.npmjs.com/package/@poblouin/homebridge-spotify-speaker) [![Build and Lint](https://github.com/poblouin/homebridge-spotify-speaker/actions/workflows/build.yml/badge.svg)](https://github.com/poblouin/homebridge-spotify-speaker/actions/workflows/build.yml)
 
 **Please read before using and facing any deceptions**
