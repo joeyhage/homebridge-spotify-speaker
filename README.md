@@ -65,3 +65,11 @@ With the previous steps, you will provide the code grant and the plugin will do 
 - It will generate the access and refresh tokens
 - It will store them in a file named `.homebridge-spotify-speaker` in the homebridge's persist directory. Thus, when your homebridge server restarts, it can fetch back the tokens.
 - It will automatically refresh the access token when needed
+
+## Finding a speaker device ID
+
+Once the spotify authentication flow is done, the plugin will display the list of available devices in your Homebridge logs. In Homebridge UI, keep an eye on the logs when the plugin restarts and you will see a message looking like the following:
+
+![Example Device Log](assets/example-device.png)
+
+You can then take the `id` from the Spotify device that you want to control and this is what you put in the plugin's configuration as the `spotifyDeviceId`.
