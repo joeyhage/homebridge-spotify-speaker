@@ -13,6 +13,16 @@ The main purpose of this plugin is to expose a speaker in Homekit that is linked
 
 The primary use case for me is that we have a little feather friend at home, and I wanted an easy way to start playing its Spotify playlist when we leave home. I might improve it in the future, but for now this is what I needed. I guess once Spotify will support Airplay 2, we will be able to play Spotify on the Homepod Mini, for example and this plugin won't have any purpose anymore. If you feel that something could be improved, PRs are the most welcome!
 
+## Distinction between Spotify Connect and Spotify Connect API
+
+Spotify Connect is the technology built-in the Spotify app (Desktop and Mobile) that allow a device to play music on a compatible Spotify Connect device.
+
+Spotify Connect API is a collection of HTTP endpoints to communicate with compatible devices. Also, keep in mind that Spotify Connect API is still in beta. Features could change at any moment and I might need to adapt this plugin as it evolves.
+
+A device that is compatible with Spotify Connect is not automatically compatible with Spotify Connect API. The best example is Sonos, they are obviously compatible with Spotify Connect, but not with the API.
+
+I am not able to find an official, up to date and complete list of compatible Spotify Connect API devices unfortunately. If I do find one, I will update this documentation!
+
 ## Speaker setup
 
 The speaker itself only need to be Spotify connect compatible. Either natively or you can use a library to make a speaker compatible. I personally use a bluetooth speaker hooked up to a Raspberry pi and I use [Raspotify](https://github.com/dtcooper/raspotify).
@@ -73,3 +83,19 @@ Once the spotify authentication flow is done, the plugin will display the list o
 ![Example Device Log](assets/example-device.png)
 
 You can then take the `id` from the Spotify device that you want to control and this is what you put in the plugin's configuration as the `spotifyDeviceId`.
+
+## FAQ
+
+### I don't see my device in the list of available devices
+
+If you haven't done it already, start by reading [this section](#distinction-between-spotify-connect-and-spotify-connect-api).
+
+Common issues related to that though could be:
+  - The Homebridge instance on which this plugin is installed is not on the same network as the Spotify device
+  - The Spotify device is currently tied to another user account. Example, you authenticated this plugin using your account, and the Spotify device was last played with your SO's account.
+  - The device is in sleep mode. Any devices that sleeps (e.g. a computer) won't be available via the API.
+
+## Contributors
+
+Special thanks to Tuca, the reason behind this plugin.
+![One Scary Reptile](assets/scary-reptile.png)
