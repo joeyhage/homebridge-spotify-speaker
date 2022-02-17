@@ -1,7 +1,7 @@
 {
   "displayName": "Homebridge Spotify Speaker",
   "name": "@poblouin/homebridge-spotify-speaker",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Homebridge plugin that creates a speaker that plays a specific Spotify playlist",
   "license": "MIT",
   "author": "Pierre-Olivier Blouin <poblouin@pm.me>",
@@ -11,6 +11,10 @@
   },
   "bugs": {
     "url": "https://github.com/poblouin/homebridge-spotify-speaker/issues"
+  },
+  "funding": {
+    "type" : "github",
+    "url" : "https://github.com/sponsors/poblouin"
   },
   "engines": {
     "node": ">=14.18.1",
