@@ -11,7 +11,6 @@ import { HomebridgeSpotifySpeakerDevice } from './types';
  */
 export class SpotifySmartSpeakerAccessory {
   private static DEFAULT_POLL_INTERVAL_MS = 20 * 1000;
-  private static DAY_INTERVAL = 60 * 60 * 24 * 1000;
   private service: Service;
   private currentMediaState: number;
   private targetMediaState: number;
@@ -65,8 +64,6 @@ export class SpotifySmartSpeakerAccessory {
         this.service.updateCharacteristic(this.platform.Characteristic.Volume, this.currentVolume);
       }
     }, SpotifySmartSpeakerAccessory.DEFAULT_POLL_INTERVAL_MS);
-
-    setInterval(() => this.platform.spotifyApiWrapper.refreshTokens(), SpotifySmartSpeakerAccessory.DAY_INTERVAL);
   }
 
   handleCurrentMediaStateGet(): number {
