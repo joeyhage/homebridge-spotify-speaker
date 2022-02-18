@@ -18,6 +18,9 @@ const DEVICE_CLASS_CONFIG_MAP = {
   speaker: SpotifySpeakerAccessory,
   smartSpeaker: SpotifySmartSpeakerAccessory,
 };
+
+const DAY_INTERVAL = 60 * 60 * 24 * 1000;
+
 export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
   public readonly Service: typeof Service = this.api.hap.Service;
   public readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic;
@@ -50,6 +53,8 @@ export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
     this.api.on('shutdown', () => {
       this.spotifyApiWrapper.persistTokens();
     });
+
+    setInterval(() => this.spotifyApiWrapper.refreshTokens(), DAY_INTERVAL);
   }
 
   configureAccessory(accessory: PlatformAccessory) {
