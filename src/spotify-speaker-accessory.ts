@@ -5,7 +5,6 @@ import { HomebridgeSpotifySpeakerDevice } from './types';
 
 export class SpotifySpeakerAccessory {
   private static DEFAULT_POLL_INTERVAL_MS = 20 * 1000;
-  private static DAY_INTERVAL = 60 * 60 * 24 * 1000;
   private service: Service;
   private activeState: boolean;
   private currentVolume: number;
@@ -52,8 +51,6 @@ export class SpotifySpeakerAccessory {
         this.service.updateCharacteristic(this.platform.Characteristic.Brightness, this.currentVolume);
       }
     }, SpotifySpeakerAccessory.DEFAULT_POLL_INTERVAL_MS);
-
-    setInterval(() => this.platform.spotifyApiWrapper.refreshTokens(), SpotifySpeakerAccessory.DAY_INTERVAL);
   }
 
   handleOnGet(): boolean {
