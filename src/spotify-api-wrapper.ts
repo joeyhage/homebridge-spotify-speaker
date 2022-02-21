@@ -2,6 +2,7 @@ import fs from 'fs';
 
 import { API, Logger, PlatformConfig } from 'homebridge';
 import SpotifyWebApi from 'spotify-web-api-node';
+import { SpotifyDeviceNotFoundError } from './errors';
 
 import { SpotifyPlaybackState, WebapiError } from './types';
 
@@ -163,12 +164,16 @@ export class SpotifyApiWrapper {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const isWebApiError = Object.getPrototypeOf((error as any).constructor).name === 'WebapiError';
 
-      if (isWebApiError && (error as WebapiError).statusCode === 401) {
-        this.log.debug('Access token has expired, attempting token refresh');
+      if (isWebApiError) {
+        if ((error as WebapiError).statusCode === 401) {
+          this.log.debug('Access token has expired, attempting token refresh');
 
-        const areTokensRefreshed = await this.refreshTokens();
-        if (areTokensRefreshed) {
-          return this.wrappedRequest(cb);
+          const areTokensRefreshed = await this.refreshTokens();
+          if (areTokensRefreshed) {
+            return this.wrappedRequest(cb);
+          }
+        } else if ((error as WebapiError).statusCode === 404) {
+          throw new SpotifyDeviceNotFoundError();
         }
       }
 
