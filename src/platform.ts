@@ -10,13 +10,11 @@ import {
 import { URL } from 'url';
 
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
-import { SpotifySmartSpeakerAccessory } from './spotify-smart-speaker-accessory';
 import { SpotifySpeakerAccessory } from './spotify-speaker-accessory';
 import { SpotifyApiWrapper } from './spotify-api-wrapper';
 
 const DEVICE_CLASS_CONFIG_MAP = {
   speaker: SpotifySpeakerAccessory,
-  smartSpeaker: SpotifySmartSpeakerAccessory,
 };
 
 const DAY_INTERVAL = 60 * 60 * 24 * 1000;
@@ -111,9 +109,7 @@ export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
     }
   }
 
-  private getDeviceConstructor(
-    deviceType,
-  ): typeof SpotifySmartSpeakerAccessory | typeof SpotifySpeakerAccessory | null {
+  private getDeviceConstructor(deviceType): typeof SpotifySpeakerAccessory | null {
     if (!deviceType) {
       this.log.error('It is missing the `deviceType` in the configuration.');
       return null;
