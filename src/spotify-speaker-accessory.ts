@@ -64,14 +64,20 @@ export class SpotifySpeakerAccessory {
       return;
     }
 
-    if (value) {
-      await this.platform.spotifyApiWrapper.play(this.device.spotifyDeviceId, this.device.spotifyPlaylistUrl);
-      this.platform.spotifyApiWrapper.setShuffle(true, this.device.spotifyDeviceId);
-    } else {
-      this.platform.spotifyApiWrapper.pause(this.device.spotifyDeviceId);
-    }
+    try {
+      if (value) {
+        await this.platform.spotifyApiWrapper.play(this.device.spotifyDeviceId, this.device.spotifyPlaylistUrl);
+        this.platform.spotifyApiWrapper.setShuffle(true, this.device.spotifyDeviceId);
+      } else {
+        this.platform.spotifyApiWrapper.pause(this.device.spotifyDeviceId);
+      }
 
-    this.activeState = value;
+      this.activeState = value;
+    } catch (error) {
+      if ((error as Error).name === 'SpotifyDeviceNotFoundError') {
+        throw new this.platform.api.hap.HapStatusError(this.platform.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE);
+      }
+    }
   }
 
   async handleBrightnessGet() {
@@ -85,8 +91,14 @@ export class SpotifySpeakerAccessory {
       return;
     }
 
-    await this.platform.spotifyApiWrapper.setVolume(value, this.device.spotifyDeviceId);
-    this.currentVolume = value;
+    try {
+      await this.platform.spotifyApiWrapper.setVolume(value, this.device.spotifyDeviceId);
+      this.currentVolume = value;
+    } catch (error) {
+      if ((error as Error).name === 'SpotifyDeviceNotFoundError') {
+        throw new this.platform.api.hap.HapStatusError(this.platform.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE);
+      }
+    }
   }
 
   private async setInitialState(): Promise<void> {
