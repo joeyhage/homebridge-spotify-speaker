@@ -3,7 +3,6 @@ import { Service, PlatformAccessory, Logger, Categories } from 'homebridge';
 import { HomebridgeSpotifySpeakerPlatform } from './platform';
 import { HomebridgeSpotifySpeakerDevice } from './types';
 
-
 /**
  * This class is meant to be used with an Airplay speaker, but
  * that is not implemented yet. I'm not sure if it will ever be
