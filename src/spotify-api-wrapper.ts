@@ -111,7 +111,7 @@ export class SpotifyApiWrapper {
       this.spotifyApi.setAccessToken(data.body['access_token']);
       this.spotifyApi.setRefreshToken(data.body['refresh_token']);
     } catch (err) {
-      this.log.error('Could not authorize Spotify:\n\n', err);
+      this.log.error('Could not authorize Spotify:\n\n', JSON.stringify(err));
     }
   }
 
@@ -178,7 +178,7 @@ export class SpotifyApiWrapper {
       }
 
       const errorMessage = isWebApiError ? (error as WebapiError).body : error;
-      this.log.error('Unexpected error when making a request to Spotify:', errorMessage);
+      this.log.error('Unexpected error when making a request to Spotify:', JSON.stringify(errorMessage));
     }
   }
 }
