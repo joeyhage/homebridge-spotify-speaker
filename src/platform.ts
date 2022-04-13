@@ -61,6 +61,11 @@ export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
   }
 
   discoverDevices() {
+    if (!this.config.devices) {
+      this.log.error('The "devices" section is missing in your plugin configuration, please add at least one device.');
+      return;
+    }
+
     for (const device of this.config.devices) {
       const deviceClass = this.getDeviceConstructor(device.deviceType);
       if (!deviceClass) {
