@@ -84,6 +84,10 @@ Once the spotify authentication flow is done, the plugin will display the list o
 
 You can then take the `id` from the Spotify device that you want to control and this is what you put in the plugin's configuration as the `spotifyDeviceId`.
 
+## Issues and Questions
+
+If you run into issues or you need help please use the [issues template](https://github.com/poblouin/homebridge-spotify-speaker/issues/new/choose). Fill all the relevant sections and submit your issue. It is important that you use the templates because I will automatically be assigned to your issue and I will receive an email. If you use the blank template without assigning me, I will most likely miss the Github notification since I have too many of them with work, I can't read them all.
+
 ## FAQ
 
 ### I don't see my device in the list of available devices
