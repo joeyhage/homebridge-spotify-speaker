@@ -36,14 +36,14 @@ This is Homekit's behaviour to set back the brightness to 100% when a device is 
 To use this plugin you must provide some authentication information to Spotify and those steps has to be done manually.
 
 1. Create a Spotify application in the developer's dashboard
-    
-    To do so, go to https://developer.spotify.com/dashboard and create an app. Once this is done you will have your clientId and clientSecret.
+
+    To do so, go to [Spotify Dev Dashboard](https://developer.spotify.com/dashboard) and create an app. Once this is done you will have your clientId and clientSecret.
 
 2. Obtain the auth code that this plugin will need to generate the access and refresh tokens
 
     To do so, you need to allow access to the app you created at the previous step. You only need to do this once.
 
-    ```
+    ```md
     https://accounts.spotify.com/authorize?client_id={clientId}&response_type=code&redirect_uri=https://example.com/callback&scope={scopes}
     ```
 
@@ -57,11 +57,12 @@ To use this plugin you must provide some authentication information to Spotify a
     - You will have a small agreement form, simply accept it.
     - Then you will be redirected and you will find your code in the URL
 
-    ```
+    ```md
     Example, you will get an URL that looks like the following. The code is everything that follows `code=`.
 
     https://example.com/callback?code=AQDPqT0ctdUm-uE2JRwbAoaWA-iRm0OuGY7wI17zQUlTxw7JfRma6id1mq-m8xKH6vJVNutJSqQcBrPZ__81uF-hrSJ-q_AX2yUEwERQKTnaPLDFCIE-c_qBjg81JSd5FqmEpJ5j9ddgKvkWUJ6WK5Kj-npTypCrUoQWRn9Vkn33DlYOfU7BxgPAPQBXQtqIfub3S576-gdUOGUAGPd6Ud5esSNMeI2lFKb-sj4eMiQJJJb35VI__EkRuFFJNCZkFagr3rBI-GGzfQA
-    ```  
+    ```
+
 3. Take the code obtained at step #2 and put it in your homebridge `config.json` as the value of the attribute `spotifyAuthCode`. Once that is done, restart Homebridge and you should be up and running. Look at the logs for ay errors.
 
 For more details, see the [official auth documentation](https://developer.spotify.com/documentation/general/guides/authorization-guide/#authorization-code-flow)
@@ -95,9 +96,10 @@ If you run into issues or you need help please use the [issues template](https:/
 If you haven't done it already, start by reading [this section](#distinction-between-spotify-connect-and-spotify-connect-api).
 
 Common issues related to that though could be:
-  - The Homebridge instance on which this plugin is installed is not on the same network as the Spotify device
-  - The Spotify device is currently tied to another user account. Example, you authenticated this plugin using your account, and the Spotify device was last played with your SO's account.
-  - The device is in sleep mode. Any devices that sleeps (e.g. a computer) won't be available via the API.
+
+- The Homebridge instance on which this plugin is installed is not on the same network as the Spotify device
+- The Spotify device is currently tied to another user account. Example, you authenticated this plugin using your account, and the Spotify device was last played with your SO's account.
+- The device is in sleep mode. Any devices that sleeps (e.g. a computer) won't be available via the API.
 
 ## Contributors
 

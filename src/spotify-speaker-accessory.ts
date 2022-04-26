@@ -111,19 +111,46 @@ export class SpotifySpeakerAccessory {
 
   private async setCurrentStates() {
     const state = await this.platform.spotifyApiWrapper.getPlaybackState();
+    const playingHref = state?.body?.context?.href;
+    const playingDeviceId = state?.body?.device?.id;
 
-    // Make sure that this accessory is the one playing i.e. the playlist ID
-    // playing is the one from this accessory.
-    if (!state?.body?.context?.href?.includes(this.accessory.context.playlistId)) {
+    if (!state || state.statusCode !== 200) {
+      this.activeState = false;
+      this.currentVolume = 0;
       return;
     }
 
-    if (state?.statusCode === 200) {
+    if (state.body.is_playing && this.isPlaying(playingHref, playingDeviceId)) {
       this.activeState = state.body.is_playing;
       this.currentVolume = state.body.device.volume_percent;
-    } else if (!state || state.statusCode === 204) {
+    } else {
       this.activeState = false;
       this.currentVolume = 0;
     }
+  }
+
+  /**
+   * Finds which speaker should be synced.
+   *
+   * Speakers tied to a playlist will have priority over lone
+   * speakers (no playlist ID associated).
+   *
+   * @param playingHref The href of the currently playing Spotify playlist
+   * @param playingDeviceId The spotify device ID
+   */
+  private isPlaying(playingHref: string | undefined, playingDeviceId: string | undefined) {
+    const contextPlaylistId = this.accessory.context.playlistId;
+
+    if (contextPlaylistId && playingHref?.includes(contextPlaylistId)) {
+      return true;
+    }
+
+    const currentDevicePlaying = this.device.spotifyDeviceId === playingDeviceId;
+    const hasHigherPrioritySpeaker = this.platform.accessories.find((a) => playingHref?.includes(a.context.playlistId));
+    if (currentDevicePlaying && !contextPlaylistId && !hasHigherPrioritySpeaker) {
+      return true;
+    }
+
+    return false;
   }
 }
