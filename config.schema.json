@@ -55,8 +55,7 @@
             "spotifyPlaylistUrl": {
               "title": "Spotify Playlist URL",
               "description": "The URL of the Spotify playlist that you want to play when this device will be set to ON in Homekit.",
-              "type": "string",
-              "required": true
+              "type": "string"
             }
           }
         }
