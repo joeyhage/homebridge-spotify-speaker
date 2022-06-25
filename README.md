@@ -33,7 +33,7 @@ This is Homekit's behaviour to set back the brightness to 100% when a device is 
 
 ## Spotify Setup
 
-To use this plugin you must provide some authentication information to Spotify and those steps has to be done manually.
+To use this plugin you must provide some authentication information to Spotify and those steps has to be done manually. Note that Spotify Premium is required in order to use the Connect API.
 
 1. Create a Spotify application in the developer's dashboard
 
