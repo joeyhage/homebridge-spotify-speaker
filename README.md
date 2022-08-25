@@ -39,6 +39,8 @@ To use this plugin you must provide some authentication information to Spotify a
 
     To do so, go to [Spotify Dev Dashboard](https://developer.spotify.com/dashboard) and create an app. Once this is done you will have your clientId and clientSecret.
 
+    By default, if you do not set the redirect URI in the app setting, it will be set to `https://example.com/callback`. This is the URI I use in all the examples below. If you want to use another redirect URI, you will need to set it in the app setting in your Spotify Dev Dashboard and also set the same URI in the plugin's config. If you don't do that you will end up with an Invalid Redirect URI error.
+
 2. Obtain the auth code that this plugin will need to generate the access and refresh tokens
 
     To do so, you need to allow access to the app you created at the previous step. You only need to do this once.
