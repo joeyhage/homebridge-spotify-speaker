@@ -7,6 +7,7 @@ import { SpotifyDeviceNotFoundError } from './errors';
 import { SpotifyPlaybackState, WebapiError } from './types';
 
 const DEFAULT_SPOTIFY_CALLBACK = 'https://example.com/callback';
+
 export class SpotifyApiWrapper {
   private readonly authCode: string;
   private readonly persistPath: string;
@@ -20,7 +21,7 @@ export class SpotifyApiWrapper {
     this.spotifyApi = new SpotifyWebApi({
       clientId: config.spotifyClientId,
       clientSecret: config.spotifyClientSecret,
-      redirectUri: DEFAULT_SPOTIFY_CALLBACK,
+      redirectUri: config.spotifyRedirectUri || DEFAULT_SPOTIFY_CALLBACK,
     });
   }
 

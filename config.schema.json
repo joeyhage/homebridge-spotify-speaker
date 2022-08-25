@@ -21,6 +21,12 @@
         "type": "string",
         "required": true
       },
+      "spotifyRedirectUri": {
+        "title": "Spotify Redirect URI",
+        "type": "string",
+        "default": "https://example.com/callback",
+        "required": true
+      },
       "spotifyAuthCode": {
         "title": "Spotify Auth Code",
         "type": "string",
