@@ -66,13 +66,10 @@ export class SpotifyApiWrapper {
     }
   }
 
-  async play(deviceId: string, contextUri: string, uris?: string, offset?: number, positionMs?: number) {
+  async play(deviceId: string, contextUri: string) {
     const options = {
       device_id: deviceId,
       context_uri: contextUri,
-      ...(uris && { uris }),
-      ...(offset && { offset }),
-      ...(positionMs && { position_ms: positionMs }),
     };
 
     await this.wrappedRequest(() => this.spotifyApi.play(options));

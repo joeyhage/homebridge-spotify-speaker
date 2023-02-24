@@ -67,9 +67,9 @@ export class SpotifySpeakerAccessory {
     try {
       if (value) {
         await this.platform.spotifyApiWrapper.play(this.device.spotifyDeviceId, this.device.spotifyPlaylistUrl);
-        this.platform.spotifyApiWrapper.setShuffle(true, this.device.spotifyDeviceId);
+        await this.platform.spotifyApiWrapper.setShuffle(true, this.device.spotifyDeviceId);
       } else {
-        this.platform.spotifyApiWrapper.pause(this.device.spotifyDeviceId);
+        await this.platform.spotifyApiWrapper.pause(this.device.spotifyDeviceId);
       }
 
       this.activeState = value;
@@ -120,9 +120,9 @@ export class SpotifySpeakerAccessory {
       return;
     }
 
-    if (state.body.is_playing && this.isPlaying(playingHref, playingDeviceId)) {
+    if (state.body.is_playing && this.isPlaying(playingHref, playingDeviceId ?? undefined)) {
       this.activeState = state.body.is_playing;
-      this.currentVolume = state.body.device.volume_percent;
+      this.currentVolume = state.body.device.volume_percent || 0;
     } else {
       this.activeState = false;
       this.currentVolume = 0;

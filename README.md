@@ -87,6 +87,8 @@ Once the spotify authentication flow is done, the plugin will display the list o
 
 You can then take the `id` from the Spotify device that you want to control and this is what you put in the plugin's configuration as the `spotifyDeviceId`.
 
+You can also use the [Spotify developer console](https://developer.spotify.com/console/get-users-available-devices/) to get the available devices on your account.
+
 ## Issues and Questions
 
 If you run into issues or you need help please use the [issues template](https://github.com/poblouin/homebridge-spotify-speaker/issues/new/choose). Fill all the relevant sections and submit your issue. It is important that you use the templates because I will automatically be assigned to your issue and I will receive an email. If you use the blank template without assigning me, I will most likely miss the Github notification since I have too many of them with work, I can't read them all.
@@ -102,6 +104,12 @@ Common issues related to that though could be:
 - The Homebridge instance on which this plugin is installed is not on the same network as the Spotify device
 - The Spotify device is currently tied to another user account. Example, you authenticated this plugin using your account, and the Spotify device was last played with your SO's account.
 - The device is in sleep mode. Any devices that sleeps (e.g. a computer) won't be available via the API.
+
+### Amazon Alexa device not responding
+
+Some devices (notably Amazon Alexa devices) will show an `id` like `00000000-0000-0000-0000-000000000000_amzn_1`. However, in some cases, Spotify doesn't like the `_amzn_1` suffix.
+
+To try it before changing the Homebridge plugin settings, test the [Start/Resume Playback API](https://developer.spotify.com/console/put-play/) in the Spotify developer console. Try setting the `device_id` to the `id` with and without the `_amzn_#` suffix.
 
 ## Contributors
 

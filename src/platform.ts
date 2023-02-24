@@ -52,7 +52,7 @@ export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
       this.spotifyApiWrapper.persistTokens();
     });
 
-    setInterval(() => this.spotifyApiWrapper.refreshTokens(), DAY_INTERVAL);
+    setInterval(async () => await this.spotifyApiWrapper.refreshTokens(), DAY_INTERVAL);
   }
 
   configureAccessory(accessory: PlatformAccessory) {
@@ -132,7 +132,7 @@ export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
   private async logAvailableSpotifyDevices(): Promise<void> {
     const spotifyDevices = await this.spotifyApiWrapper.getMyDevices();
 
-    if (spotifyDevices.length === 0) {
+    if (!spotifyDevices || spotifyDevices.length === 0) {
       this.log.warn(
         'No available spotify devices found, make sure that the speaker you configured is On and visible by Spotify Connect',
       );
