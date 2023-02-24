@@ -1,5 +1,3 @@
-/// <reference types="spotify-api" />
-
 export interface HomebridgeSpotifySpeakerDevice {
   deviceName: string;
   deviceType: string;
