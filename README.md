@@ -5,11 +5,7 @@
 # Homebridge Spotify Speaker
 
 [![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
-[![npm version](https://img.shields.io/npm/v/@poblouin/homebridge-spotify-speaker)](https://www.npmjs.com/package/@poblouin/homebridge-spotify-speaker) [![npm downloads](https://img.shields.io/npm/dt/@poblouin/homebridge-spotify-speaker)](https://www.npmjs.com/package/@poblouin/homebridge-spotify-speaker) [![Build and Lint](https://github.com/poblouin/homebridge-spotify-speaker/actions/workflows/build.yml/badge.svg)](https://github.com/poblouin/homebridge-spotify-speaker/actions/workflows/build.yml)
-
-## Note on maintenance
-
-⚠️ I am not actively maintaining this plugin anymore. ⚠️
+[![npm version](https://img.shields.io/npm/v/homebridge-spotify-speaker)](https://www.npmjs.com/package/homebridge-spotify-speaker) [![npm downloads](https://img.shields.io/npm/dt/homebridge-spotify-speaker)](https://www.npmjs.com/package/homebridge-spotify-speaker) [![Build and Lint](https://github.com/joeyhage/homebridge-spotify-speaker/actions/workflows/build.yml/badge.svg)](https://github.com/joeyhage/homebridge-spotify-speaker/actions/workflows/build.yml)
 
 ## Please read before using and facing any deceptions
 
@@ -95,7 +91,7 @@ You can also use the [Spotify developer console](https://developer.spotify.com/c
 
 ## Issues and Questions
 
-If you run into issues or you need help please use the [issues template](https://github.com/poblouin/homebridge-spotify-speaker/issues/new/choose). Fill all the relevant sections and submit your issue. It is important that you use the templates because I will automatically be assigned to your issue and I will receive an email. If you use the blank template without assigning me, I will most likely miss the Github notification since I have too many of them with work, I can't read them all.
+If you run into issues or you need help please use the [issues template](https://github.com/joeyhage/homebridge-spotify-speaker/issues/new/choose). Fill all the relevant sections and submit your issue. It is important that you use the templates because I will automatically be assigned to your issue and I will receive an email. If you use the blank template without assigning me, I will most likely miss the Github notification since I have too many of them with work, I can't read them all.
 
 ## FAQ
 

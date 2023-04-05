@@ -1,3 +1,3 @@
 export const PLATFORM_NAME = 'HomebridgeSpotifySpeaker';
 
-export const PLUGIN_NAME = '@poblouin/homebridge-spotify-speaker';
+export const PLUGIN_NAME = 'homebridge-spotify-speaker';
