@@ -1,7 +1,7 @@
 {
   "displayName": "Homebridge Spotify Speaker",
   "name": "homebridge-spotify-speaker",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Homebridge plugin that creates a speaker that plays a specific Spotify playlist",
   "license": "MIT",
   "author": "Joey Hage <contact@jmhage.com>",
