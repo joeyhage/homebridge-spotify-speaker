@@ -2,6 +2,8 @@
 src
 config.dev.json
 TEMPLATE_README.md
+.homebridge-spotify-speaker
+.tool-versions
 
 # ------------- Defaults ------------- #
 
@@ -16,6 +18,9 @@ TEMPLATE_README.md
 
 # typescript
 tsconfig.json
+
+# jest
+jest.config.js
 
 # vscode
 .vscode

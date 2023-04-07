@@ -7,10 +7,14 @@
   "author": "Joey Hage <contact@jmhage.com>",
   "repository": {
     "type": "git",
-    "url": "git://github.com:joeyhage/homebridge-spotify-speaker.git"
+    "url": "git://github.com:joeyhage/homebridge-spotify-speaker-temp.git"
   },
   "bugs": {
-    "url": "https://github.com/joeyhage/homebridge-spotify-speaker/issues"
+    "url": "https://github.com/joeyhage/homebridge-spotify-speaker-temp/issues"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/joeyhage"
   },
   "engines": {
     "node": ">=14.18.1",
@@ -37,18 +41,22 @@
     "spotify-web-api-node": "^5.0.2"
   },
   "devDependencies": {
-    "@types/node": "^18.14.1",
+    "@types/jest": "^29.5.0",
+    "@types/node": "^18.15.11",
     "@types/spotify-web-api-node": "^5.0.7",
-    "@typescript-eslint/eslint-plugin": "^5.53.0",
-    "@typescript-eslint/parser": "^5.53.0",
-    "eslint": "^8.34.0",
-    "eslint-config-prettier": "^8.6.0",
+    "@typescript-eslint/eslint-plugin": "^5.57.0",
+    "@typescript-eslint/parser": "^5.57.0",
+    "dotenv": "^16.0.3",
+    "eslint": "^8.37.0",
+    "eslint-config-prettier": "^8.8.0",
     "homebridge": "^1.6.0",
     "husky": "^8.0.3",
-    "lint-staged": "^13.1.2",
-    "nodemon": "^2.0.20",
-    "prettier": "^2.8.4",
-    "rimraf": "^3.0.2",
+    "jest": "^29.5.0",
+    "lint-staged": "^13.2.0",
+    "nodemon": "^2.0.22",
+    "prettier": "^2.8.7",
+    "rimraf": "^4.4.1",
+    "ts-jest": "^29.0.5",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.5"
   }
