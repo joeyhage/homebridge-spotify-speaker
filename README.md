@@ -4,14 +4,13 @@
 
 # Homebridge Spotify Speaker
 
-[![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
-[![npm version](https://img.shields.io/npm/v/homebridge-spotify-speaker)](https://www.npmjs.com/package/homebridge-spotify-speaker) [![npm downloads](https://img.shields.io/npm/dt/homebridge-spotify-speaker)](https://www.npmjs.com/package/homebridge-spotify-speaker) [![Build and Lint](https://github.com/joeyhage/homebridge-spotify-speaker/actions/workflows/build.yml/badge.svg)](https://github.com/joeyhage/homebridge-spotify-speaker/actions/workflows/build.yml)
+[![npm version](https://img.shields.io/npm/v/homebridge-spotify-speaker)](https://www.npmjs.com/package/homebridge-spotify-speaker) [![npm downloads](https://img.shields.io/npm/dt/homebridge-spotify-speaker)](https://www.npmjs.com/package/homebridge-spotify-speaker) [![Build and Lint](https://github.com/joeyhage/homebridge-spotify-speaker-temp/actions/workflows/build.yml/badge.svg)](https://github.com/joeyhage/homebridge-spotify-speaker-temp/actions/workflows/build.yml)
+
+Forked from poblouin/homebridge-spotify-speaker since it is no longer being maintained.
 
 ## Please read before using and facing any deceptions
 
 The main purpose of this plugin is to expose a speaker in Homekit that is linked to a specific spotify device ID and that will play a specific playlist once activated. As of the current state, it is not a real speaker in Homekit, it's a lightbulb. A speaker accessory requires Airplay 2 and Spotify is not Airplay 2 compatible yet (will it ever be!?). With a lightbulb, you can toggle on/off the playlist and change the volume via the brightness setting.
-
-The primary use case for me is that we have a little feather friend at home, and I wanted an easy way to start playing its Spotify playlist when we leave home. I might improve it in the future, but for now this is what I needed. I guess once Spotify will support Airplay 2, we will be able to play Spotify on the Homepod Mini, for example and this plugin won't have any purpose anymore. If you feel that something could be improved, PRs are the most welcome!
 
 ## Distinction between Spotify Connect and Spotify Connect API
 
@@ -25,11 +24,15 @@ I am not able to find an official, up to date and complete list of compatible Sp
 
 ## Speaker setup
 
-The speaker itself only need to be Spotify connect compatible. Either natively or you can use a library to make a speaker compatible. I personally use a bluetooth speaker hooked up to a Raspberry pi and I use [Raspotify](https://github.com/dtcooper/raspotify).
+The speaker itself only need to be Spotify connect compatible. Either natively or you can use a library to make a speaker compatible. I personally use an Amazon Echo Dot.
 
 ## Warning about the volume
 
 This is Homekit's behaviour to set back the brightness to 100% when a device is shut down. There is nothing I can do about it unfortunately. So to make sure that you don't turn on your speaker with the volume set to 100%, use a scene to toggle on the speaker and set the default volume (brightness) in there.
+
+### Future enhancement planned
+
+I plan to add an option to use a switch instead of a lightbulb and a new configuration option for volume. This would allow setting the volume to the same thing every time the switch is toggled on.
 
 ## Spotify Setup
 
@@ -91,7 +94,7 @@ You can also use the [Spotify developer console](https://developer.spotify.com/c
 
 ## Issues and Questions
 
-If you run into issues or you need help please use the [issues template](https://github.com/joeyhage/homebridge-spotify-speaker/issues/new/choose). Fill all the relevant sections and submit your issue. It is important that you use the templates because I will automatically be assigned to your issue and I will receive an email. If you use the blank template without assigning me, I will most likely miss the Github notification since I have too many of them with work, I can't read them all.
+If you run into issues or you need help please use the [issues template](https://github.com/joeyhage/homebridge-spotify-speaker-temp/issues/new/choose). Fill all the relevant sections and submit your issue. It is important that you use the templates because I will automatically be assigned to your issue and I will receive an email. If you use the blank template without assigning me, I will most likely miss the Github notification since I have too many of them with work, I can't read them all.
 
 ## FAQ
 
@@ -113,5 +116,4 @@ To try it before changing the Homebridge plugin settings, test the [Start/Resume
 
 ## Contributors
 
-Special thanks to Tuca, the reason behind this plugin.
-![One Scary Reptile](assets/scary-reptile.png)
+Special thanks to [@poblouin](https://github.com/poblouin) who had the original idea for this plugin and did all the heavy lifting! See [poblouin/homebridge-spotify-speaker](https://github.com/poblouin/homebridge-spotify-speaker) for the original repository.

@@ -1,5 +1,6 @@
 # Ignore compiled code
 dist
+.homebridge-spotify-speaker
 
 # ------------- Defaults ------------- #
 

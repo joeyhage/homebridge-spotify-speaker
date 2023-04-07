@@ -146,7 +146,9 @@ export class SpotifySpeakerAccessory {
     }
 
     const currentDevicePlaying = this.device.spotifyDeviceId === playingDeviceId;
-    const hasHigherPrioritySpeaker = this.platform.accessories.find((a) => playingHref?.includes(a.context.playlistId));
+    const hasHigherPrioritySpeaker = Object.values(this.platform.accessories).some((a) =>
+      playingHref?.includes(a.context.playlistId),
+    );
     if (currentDevicePlaying && !contextPlaylistId && !hasHigherPrioritySpeaker) {
       return true;
     }

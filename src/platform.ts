@@ -23,7 +23,9 @@ export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
   public readonly Service: typeof Service = this.api.hap.Service;
   public readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic;
   public readonly spotifyApiWrapper: SpotifyApiWrapper;
-  public readonly accessories: PlatformAccessory[] = [];
+  public readonly accessories: {
+    [uuid: string]: PlatformAccessory;
+  } = {};
 
   constructor(public readonly log: Logger, public readonly config: PlatformConfig, public readonly api: API) {
     this.log.debug('Finished initializing platform:', this.config.name);
@@ -57,7 +59,7 @@ export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
 
   configureAccessory(accessory: PlatformAccessory) {
     this.log.info('Loading accessory from cache:', accessory.displayName);
-    this.accessories.push(accessory);
+    this.accessories[accessory.UUID] = accessory;
   }
 
   discoverDevices() {
@@ -66,6 +68,10 @@ export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
       return;
     }
 
+    const cachedAccessoryIds = Object.keys(this.accessories),
+      platformAccessories: PlatformAccessory[] = [],
+      activeAccessoryIds: string[] = [];
+
     for (const device of this.config.devices) {
       const deviceClass = this.getDeviceConstructor(device.deviceType);
       if (!deviceClass) {
@@ -73,27 +79,38 @@ export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
       }
 
       const uuid = this.api.hap.uuid.generate(`${device.deviceName}-${device.spotifyDeviceId}`);
-      const existingAccessory = this.accessories.find((accessory) => accessory.UUID === uuid);
+      const existingAccessory = this.accessories[uuid];
       const playlistId = this.extractPlaylistId(device.spotifyPlaylistUrl);
 
+      const accessory =
+        existingAccessory ?? new this.api.platformAccessory(device.deviceName, uuid, deviceClass.CATEGORY);
+      accessory.context.device = device;
+      accessory.context.playlistId = playlistId;
+      new deviceClass(this, accessory, device, this.log);
+      activeAccessoryIds.push(uuid);
+
       if (existingAccessory) {
-        this.log.info('Restoring existing accessory from cache:', existingAccessory.displayName);
-
-        existingAccessory.context.device = device;
-        existingAccessory.context.playlistId = playlistId;
-        this.api.updatePlatformAccessories([existingAccessory]);
-
-        new deviceClass(this, existingAccessory, device, this.log);
+        this.log.info('Restoring existing accessory from cache:', accessory.displayName);
       } else {
         this.log.info('Adding new accessory:', device.deviceName);
-
-        const accessory = new this.api.platformAccessory(device.deviceName, uuid, deviceClass.CATEGORY);
-        accessory.context.device = device;
-        accessory.context.playlistId = playlistId;
-
-        new deviceClass(this, accessory, device, this.log);
-        this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+        platformAccessories.push(accessory);
       }
+    }
+
+    if (platformAccessories.length) {
+      this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, platformAccessories);
+    }
+
+    const staleAccessories = cachedAccessoryIds
+      .filter((cachedId) => !activeAccessoryIds.includes(cachedId))
+      .map((id) => this.accessories[id]);
+
+    staleAccessories.forEach((staleAccessory) => {
+      this.log.info(`Removing stale cached accessory ${staleAccessory.UUID} ${staleAccessory.displayName}`);
+    });
+
+    if (staleAccessories.length) {
+      this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, staleAccessories);
     }
   }
 
