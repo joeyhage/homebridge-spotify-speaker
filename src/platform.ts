@@ -1,17 +1,16 @@
 import {
   API,
+  Characteristic,
   DynamicPlatformPlugin,
   Logger,
   PlatformAccessory,
   PlatformConfig,
   Service,
-  Characteristic,
 } from 'homebridge';
 import { URL } from 'url';
-
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
-import { SpotifySpeakerAccessory } from './spotify-speaker-accessory';
 import { SpotifyApiWrapper } from './spotify-api-wrapper';
+import { SpotifySpeakerAccessory } from './spotify-speaker-accessory';
 
 const DEVICE_CLASS_CONFIG_MAP = {
   speaker: SpotifySpeakerAccessory,

@@ -62,7 +62,20 @@
               "title": "Spotify Playlist URL",
               "description": "The URL of the Spotify playlist that you want to play when this device will be set to ON in Homekit.",
               "type": "string"
-            }
+            },
+            "playlistShuffle": {
+              "title": "Spotify playlist shuffle",
+              "description": "Whether or not to enable shuffle when the playlist is played",
+              "type": "boolean",
+              "required": false,
+              "default": true
+            },
+            "playlistRepeat": {
+              "title": "Spotify playlist repeat",
+              "description": "Whether or not to enable repeat of the entire Spotify playlist",
+              "type": "boolean",
+              "required": false,
+              "default": false
           }
         }
       }
