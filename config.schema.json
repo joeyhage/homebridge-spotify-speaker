@@ -32,6 +32,15 @@
         "type": "string",
         "required": true
       },
+      "spotifyPollInterval": {
+        "title": "Status polling interval",
+        "type": "integer",
+        "default": 20,
+        "minimum": 20,
+        "maximum": 600,
+        "placeholder": "Get speaker status every __ seconds",
+        "description": "Speaker status does not update live and must be fetched periodically. This is done every 20 seconds by default"
+      },
       "devices": {
         "type": "array",
         "items": {
@@ -61,21 +70,23 @@
             "spotifyPlaylistUrl": {
               "title": "Spotify Playlist URL",
               "description": "The URL of the Spotify playlist that you want to play when this device will be set to ON in Homekit.",
-              "type": "string"
+              "type": "string",
+              "required": false
             },
             "playlistShuffle": {
               "title": "Spotify playlist shuffle",
-              "description": "Whether or not to enable shuffle when the playlist is played",
+              "description": "Whether to enable shuffle which randomizes the order tracks in the playlist are played",
               "type": "boolean",
               "required": false,
               "default": true
             },
             "playlistRepeat": {
               "title": "Spotify playlist repeat",
-              "description": "Whether or not to enable repeat of the entire Spotify playlist",
+              "description": "Whether to repeat the entire playlist once all tracks have been played.",
               "type": "boolean",
               "required": false,
               "default": false
+            }
           }
         }
       }
