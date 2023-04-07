@@ -1,10 +1,3 @@
-export interface HomebridgeSpotifySpeakerDevice {
-  deviceName: string;
-  deviceType: string;
-  spotifyDeviceId: string;
-  spotifyPlaylistUrl: string;
-}
-
 interface WebapiErrorBody {
   error: {
     message: string;

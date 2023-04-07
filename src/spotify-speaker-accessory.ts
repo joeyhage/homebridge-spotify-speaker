@@ -1,7 +1,15 @@
 import { Service, PlatformAccessory, Logger, Categories } from 'homebridge';
 
-import { HomebridgeSpotifySpeakerPlatform } from './platform';
-import { HomebridgeSpotifySpeakerDevice } from './types';
+import type { HomebridgeSpotifySpeakerPlatform } from './platform';
+
+export interface HomebridgeSpotifySpeakerDevice {
+  deviceName: string;
+  deviceType: string;
+  spotifyDeviceId: string;
+  spotifyPlaylistUrl: string;
+  playlistRepeat?: boolean;
+  playlistShuffle?: boolean;
+}
 
 export class SpotifySpeakerAccessory {
   private static DEFAULT_POLL_INTERVAL_MS = 20 * 1000;
@@ -67,7 +75,8 @@ export class SpotifySpeakerAccessory {
     try {
       if (value) {
         await this.platform.spotifyApiWrapper.play(this.device.spotifyDeviceId, this.device.spotifyPlaylistUrl);
-        await this.platform.spotifyApiWrapper.setShuffle(true, this.device.spotifyDeviceId);
+        await this.platform.spotifyApiWrapper.setShuffle(this.device.playlistShuffle, this.device.spotifyDeviceId);
+        await this.platform.spotifyApiWrapper.setRepeat(!!this.device.playlistRepeat, this.device.spotifyDeviceId);
       } else {
         await this.platform.spotifyApiWrapper.pause(this.device.spotifyDeviceId);
       }

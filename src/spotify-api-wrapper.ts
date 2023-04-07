@@ -1,10 +1,10 @@
 import fs from 'fs';
-
-import { API, Logger, PlatformConfig } from 'homebridge';
 import SpotifyWebApi from 'spotify-web-api-node';
 import { SpotifyDeviceNotFoundError } from './errors';
 
-import { SpotifyPlaybackState, WebapiError } from './types';
+import type { API, Logger, PlatformConfig } from 'homebridge';
+import type { HomebridgeSpotifySpeakerDevice } from './spotify-speaker-accessory';
+import type { SpotifyPlaybackState, WebapiError } from './types';
 
 const DEFAULT_SPOTIFY_CALLBACK = 'https://example.com/callback';
 
@@ -83,8 +83,12 @@ export class SpotifyApiWrapper {
     return this.wrappedRequest(() => this.spotifyApi.getMyCurrentPlaybackState());
   }
 
-  async setShuffle(state: boolean, deviceId: string) {
-    await this.wrappedRequest(() => this.spotifyApi.setShuffle(state, { device_id: deviceId }));
+  async setShuffle(state: HomebridgeSpotifySpeakerDevice['playlistShuffle'], deviceId: string) {
+    await this.wrappedRequest(() => this.spotifyApi.setShuffle(state ?? true, { device_id: deviceId }));
+  }
+
+  async setRepeat(state: HomebridgeSpotifySpeakerDevice['playlistRepeat'], deviceId: string) {
+    await this.wrappedRequest(() => this.spotifyApi.setRepeat(state ? 'context' : 'off', { device_id: deviceId }));
   }
 
   async setVolume(volume: number, deviceId: string) {
@@ -116,7 +120,7 @@ export class SpotifyApiWrapper {
   private async fetchTokensFromStorage() {
     this.log.debug('Attempting to fetch tokens saved in the storage');
 
-    let tokens;
+    let tokens: { accessToken: string; refreshToken: string };
     try {
       tokens = JSON.parse(fs.readFileSync(this.persistPath, { encoding: 'utf-8' }));
     } catch (err) {
