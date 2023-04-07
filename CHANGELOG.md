@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- New plugin settings to customize Spotify shuffle and repeat. Shuffle setting randomizes the order tracks in the playlist are played. Repeat setting repeats the entire playlist once all tracks have been played.
+- New plugin setting to customize how frequently this plugin polls Spotify for changes.
+
 ## [1.2.4] - 2023-04-06
 
 ### Fixed

@@ -12,7 +12,7 @@ export interface HomebridgeSpotifySpeakerDevice {
 }
 
 export class SpotifySpeakerAccessory {
-  private static DEFAULT_POLL_INTERVAL_MS = 20 * 1000;
+  private static DEFAULT_POLL_INTERVAL_MS = 20;
   private service: Service;
   private activeState: boolean;
   private currentVolume: number;
@@ -58,7 +58,7 @@ export class SpotifySpeakerAccessory {
       if (oldVolume !== this.currentVolume) {
         this.service.updateCharacteristic(this.platform.Characteristic.Brightness, this.currentVolume);
       }
-    }, SpotifySpeakerAccessory.DEFAULT_POLL_INTERVAL_MS);
+    }, (this.platform.config.spotifyPollInterval || SpotifySpeakerAccessory.DEFAULT_POLL_INTERVAL_MS) * 1000);
   }
 
   handleOnGet(): boolean {
