@@ -7,10 +7,10 @@
   "author": "Joey Hage <contact@jmhage.com>",
   "repository": {
     "type": "git",
-    "url": "git://github.com:joeyhage/homebridge-spotify-speaker-temp.git"
+    "url": "git://github.com:joeyhage/homebridge-spotify-speaker.git"
   },
   "bugs": {
-    "url": "https://github.com/joeyhage/homebridge-spotify-speaker-temp/issues"
+    "url": "https://github.com/joeyhage/homebridge-spotify-speaker/issues"
   },
   "funding": {
     "type": "github",
