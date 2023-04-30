@@ -7,7 +7,7 @@
 [![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
 [![npm version](https://img.shields.io/npm/v/homebridge-spotify-speaker)](https://www.npmjs.com/package/homebridge-spotify-speaker) [![npm downloads](https://img.shields.io/npm/dt/homebridge-spotify-speaker)](https://www.npmjs.com/package/homebridge-spotify-speaker) [![Build and Lint](https://github.com/joeyhage/homebridge-spotify-speaker/actions/workflows/build.yml/badge.svg)](https://github.com/joeyhage/homebridge-spotify-speaker/actions/workflows/build.yml)
 
-Forked from poblouin/homebridge-spotify-speaker since it is no longer being maintained.
+This is the new home of the official homebridge-spotify-speaker plugin.
 
 To receive future maintenance and feature updates, please install the new, official, verified plugin `homebridge-spotify-speaker`. The old plugin settings JSON works with this plugin so please save it before uninstalling the old plugin.
 
@@ -85,15 +85,23 @@ With the previous steps, you will provide the code grant and the plugin will do 
 - It will store them in a file named `.homebridge-spotify-speaker` in the homebridge's persist directory. Thus, when your homebridge server restarts, it can fetch back the tokens.
 - It will automatically refresh the access token when needed
 
-## Finding a speaker device ID
+## Finding a speaker device ID or name
 
 Once the spotify authentication flow is done, the plugin will display the list of available devices in your Homebridge logs. In Homebridge UI, keep an eye on the logs when the plugin restarts and you will see a message looking like the following:
 
 ![Example Device Log](assets/example-device.png)
 
-You can then take the `id` from the Spotify device that you want to control and this is what you put in the plugin's configuration as the `spotifyDeviceId`.
+### Suggested option
 
-You can also use the [Spotify developer console](https://developer.spotify.com/console/get-users-available-devices/) to get the available devices on your account.
+You can then take the `name` from the Spotify device that you want to control and this is what you put in the plugin's configuration as the `spotifyDeviceName`.
+
+This is the suggested option because the device id used by Spotify is prone to change.
+
+### Alternative option
+
+Alternatively, you can take the `id` from the Spotify device that you want to control and put in the plugin's configuration as the `spotifyDeviceId`.
+
+You can also use the [Spotify developer console](https://developer.spotify.com/documentation/web-api/reference/get-a-users-available-devices) to get the available devices on your account.
 
 ## Issues and Questions
 
@@ -113,10 +121,10 @@ Common issues related to that though could be:
 
 ### Amazon Alexa device not responding
 
-Some devices (notably Amazon Alexa devices) will show an `id` like `00000000-0000-0000-0000-000000000000_amzn_1`. However, in some cases, Spotify doesn't like the `_amzn_1` suffix.
+Some devices (notably Amazon Alexa devices) will show an `id` like `00000000-0000-0000-0000-000000000000_amzn_1`. However, in some cases, Spotify doesn't like the `_amzn_1` suffix. Try switching to the `spotifyDeviceName` plugin configuration option instead of `spotifyDeviceId`.
 
-To try it before changing the Homebridge plugin settings, test the [Start/Resume Playback API](https://developer.spotify.com/console/put-play/) in the Spotify developer console. Try setting the `device_id` to the `id` with and without the `_amzn_#` suffix.
+If you prefer `spotifyDeviceId`, you can test it using the [Start/Resume Playback API](https://developer.spotify.com/documentation/web-api/reference/start-a-users-playback) in the Spotify developer console. Try setting the `device_id` to the `spotifyDeviceId` with and without the `_amzn_#` suffix.
 
 ## Contributors
 
-Special thanks to [@poblouin](https://github.com/poblouin) who had the original idea for this plugin and did all the heavy lifting! See [poblouin/homebridge-spotify-speaker](https://github.com/poblouin/homebridge-spotify-speaker) for the original repository.
+Special thanks to [@poblouin](https://github.com/poblouin) who had the original idea for this plugin and did all the heavy lifting!

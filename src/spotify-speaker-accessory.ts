@@ -5,7 +5,8 @@ import type { HomebridgeSpotifySpeakerPlatform } from './platform';
 export interface HomebridgeSpotifySpeakerDevice {
   deviceName: string;
   deviceType: string;
-  spotifyDeviceId: string;
+  spotifyDeviceId?: string;
+  spotifyDeviceName?: string;
   spotifyPlaylistUrl: string;
   playlistRepeat?: boolean;
   playlistShuffle?: boolean;
@@ -74,11 +75,11 @@ export class SpotifySpeakerAccessory {
 
     try {
       if (value) {
-        await this.platform.spotifyApiWrapper.play(this.device.spotifyDeviceId, this.device.spotifyPlaylistUrl);
-        await this.platform.spotifyApiWrapper.setShuffle(this.device.playlistShuffle, this.device.spotifyDeviceId);
-        await this.platform.spotifyApiWrapper.setRepeat(!!this.device.playlistRepeat, this.device.spotifyDeviceId);
+        await this.platform.spotifyApiWrapper.play(this.device.spotifyDeviceId!, this.device.spotifyPlaylistUrl);
+        await this.platform.spotifyApiWrapper.setShuffle(this.device.playlistShuffle, this.device.spotifyDeviceId!);
+        await this.platform.spotifyApiWrapper.setRepeat(!!this.device.playlistRepeat, this.device.spotifyDeviceId!);
       } else {
-        await this.platform.spotifyApiWrapper.pause(this.device.spotifyDeviceId);
+        await this.platform.spotifyApiWrapper.pause(this.device.spotifyDeviceId!);
       }
 
       this.activeState = value;
@@ -101,7 +102,7 @@ export class SpotifySpeakerAccessory {
     }
 
     try {
-      await this.platform.spotifyApiWrapper.setVolume(value, this.device.spotifyDeviceId);
+      await this.platform.spotifyApiWrapper.setVolume(value, this.device.spotifyDeviceId!);
       this.currentVolume = value;
     } catch (error) {
       if ((error as Error).name === 'SpotifyDeviceNotFoundError') {
@@ -119,6 +120,17 @@ export class SpotifySpeakerAccessory {
   }
 
   private async setCurrentStates() {
+    if (this.device.spotifyDeviceName) {
+      const devices = await this.platform.spotifyApiWrapper.getMyDevices();
+      const match = devices?.find((device) => device.name === this.device.spotifyDeviceName);
+      if (match?.id) {
+        this.device.spotifyDeviceId = match.id;
+      } else {
+        this.log.error(
+          `spotifyDeviceName '${this.device.spotifyDeviceName}' did not match any Spotify devices. spotifyDeviceName is case sensitive.`,
+        );
+      }
+    }
     const state = await this.platform.spotifyApiWrapper.getPlaybackState();
     const playingHref = state?.body?.context?.href;
     const playingDeviceId = state?.body?.device?.id;
