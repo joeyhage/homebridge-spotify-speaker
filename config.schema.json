@@ -63,9 +63,15 @@
             },
             "spotifyDeviceId": {
               "title": "Spotify Device ID",
-              "description": "The Spotify Device ID. You can find a list of available device in the plugin's logs when it starts or see the README",
+              "description": "The Spotify Device ID. Either spotifyDeviceId or spotifyDeviceName is required. You can find a list of available devices in the plugin's logs when it starts or see the README",
               "type": "string",
-              "required": true
+              "required": false
+            },
+            "spotifyDeviceName": {
+              "title": "Spotify Device Name",
+              "description": "The Spotify Device Name. Either spotifyDeviceId or spotifyDeviceName is required. You can find a list of available devices in the plugin's logs when it starts or see the README",
+              "type": "string",
+              "required": false
             },
             "spotifyPlaylistUrl": {
               "title": "Spotify Playlist URL",

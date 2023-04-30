@@ -10,7 +10,7 @@ import {
 import { URL } from 'url';
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
 import { SpotifyApiWrapper } from './spotify-api-wrapper';
-import { SpotifySpeakerAccessory } from './spotify-speaker-accessory';
+import { HomebridgeSpotifySpeakerDevice, SpotifySpeakerAccessory } from './spotify-speaker-accessory';
 
 const DEVICE_CLASS_CONFIG_MAP = {
   speaker: SpotifySpeakerAccessory,
@@ -76,10 +76,20 @@ export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
       if (!deviceClass) {
         continue;
       }
+      if (!this.deviceConfigurationIsValid(device)) {
+        this.log.error(
+          `${
+            device.deviceName ?? 'unknown device'
+          } is not configured correctly. See the documentation for initial setup`,
+        );
+        continue;
+      }
 
-      const uuid = this.api.hap.uuid.generate(`${device.deviceName}-${device.spotifyDeviceId}`);
-      const existingAccessory = this.accessories[uuid];
       const playlistId = this.extractPlaylistId(device.spotifyPlaylistUrl);
+      const uuid = this.api.hap.uuid.generate(
+        `${device.deviceName}-${device.spotifyDeviceId ?? device.spotifyDeviceName}`,
+      );
+      const existingAccessory = this.accessories[uuid];
 
       const accessory =
         existingAccessory ?? new this.api.platformAccessory(device.deviceName, uuid, deviceClass.CATEGORY);
@@ -155,5 +165,9 @@ export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
     } else {
       this.log.info('Available Spotify devices', spotifyDevices);
     }
+  }
+
+  private deviceConfigurationIsValid(device: HomebridgeSpotifySpeakerDevice) {
+    return device.spotifyDeviceId || device.spotifyDeviceName;
   }
 }
