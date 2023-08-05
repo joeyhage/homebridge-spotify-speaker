@@ -13,7 +13,7 @@ export interface HomebridgeSpotifySpeakerDevice {
 }
 
 export class SpotifySpeakerAccessory {
-  private static DEFAULT_POLL_INTERVAL_MS = 20;
+  private static DEFAULT_POLL_INTERVAL_S = 20;
   private service: Service;
   private activeState: boolean;
   private currentVolume: number;
@@ -59,7 +59,7 @@ export class SpotifySpeakerAccessory {
       if (oldVolume !== this.currentVolume) {
         this.service.updateCharacteristic(this.platform.Characteristic.Brightness, this.currentVolume);
       }
-    }, (this.platform.config.spotifyPollInterval || SpotifySpeakerAccessory.DEFAULT_POLL_INTERVAL_MS) * 1000);
+    }, (this.platform.config.spotifyPollInterval || SpotifySpeakerAccessory.DEFAULT_POLL_INTERVAL_S) * 1000);
   }
 
   handleOnGet(): boolean {
@@ -119,12 +119,18 @@ export class SpotifySpeakerAccessory {
     this.service.getCharacteristic(this.platform.Characteristic.Brightness).updateValue(this.currentVolume);
   }
 
-  private async setCurrentStates() {
+  private async setCurrentStates(isFirstAttempt = true) {
     if (this.device.spotifyDeviceName) {
       const devices = await this.platform.spotifyApiWrapper.getMyDevices();
       const match = devices?.find((device) => device.name === this.device.spotifyDeviceName);
       if (match?.id) {
         this.device.spotifyDeviceId = match.id;
+      } else if (isFirstAttempt) {
+        await new Promise((resolve) => {
+          setTimeout(() => {
+            this.setCurrentStates(false).then(resolve);
+          }, 500);
+        });
       } else {
         this.log.error(
           `spotifyDeviceName '${this.device.spotifyDeviceName}' did not match any Spotify devices. spotifyDeviceName is case sensitive.`,
