@@ -1,4 +1,4 @@
-interface WebapiErrorBody {
+export interface WebapiErrorBody {
   error: {
     message: string;
     status: number;
@@ -8,12 +8,14 @@ interface WebapiErrorBody {
 interface WebapiErrorHeaders {
   [key: string]: string | boolean;
 }
-export interface WebapiError {
-  name: string;
-  body: WebapiErrorBody;
-  headers: WebapiErrorHeaders;
-  statusCode: number;
-  message: string;
+export class WebapiError {
+  constructor(
+    public readonly name: string,
+    public readonly body: WebapiErrorBody,
+    public readonly headers: WebapiErrorHeaders,
+    public readonly statusCode: number,
+    public readonly message: string,
+  ) {}
 }
 
 /**

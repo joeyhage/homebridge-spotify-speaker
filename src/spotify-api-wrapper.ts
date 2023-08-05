@@ -4,7 +4,7 @@ import { SpotifyDeviceNotFoundError } from './errors';
 
 import type { API, Logger, PlatformConfig } from 'homebridge';
 import type { HomebridgeSpotifySpeakerDevice } from './spotify-speaker-accessory';
-import type { SpotifyPlaybackState, WebapiError } from './types';
+import { SpotifyPlaybackState, WebapiError } from './types';
 
 const DEFAULT_SPOTIFY_CALLBACK = 'https://example.com/callback';
 
@@ -95,13 +95,21 @@ export class SpotifyApiWrapper {
     await this.wrappedRequest(() => this.spotifyApi.setVolume(volume, { device_id: deviceId }));
   }
 
-  async getMyDevices() {
+  async getMyDevices(isFirstAttempt = true): Promise<SpotifyApi.UserDevice[]> {
     try {
       const res = await this.spotifyApi.getMyDevices();
       return res.body.devices;
     } catch (error) {
-      this.log.error('Failed to fetch available Spotify devices.');
-      return null;
+      if (isFirstAttempt) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            this.getMyDevices(false).then(resolve);
+          }, 500);
+        });
+      } else {
+        this.log.error('Failed to fetch available Spotify devices.', error);
+        return [];
+      }
     }
   }
 
@@ -158,29 +166,33 @@ export class SpotifyApiWrapper {
     return true;
   }
 
-  private async wrappedRequest<T>(cb: () => Promise<T>): Promise<T | undefined> {
+  private async wrappedRequest<T>(cb: () => Promise<T>, isFirstAttempt = true): Promise<T | undefined> {
     try {
       const response = await cb();
       return response;
     } catch (error: unknown) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const isWebApiError = Object.getPrototypeOf((error as any).constructor).name === 'WebapiError';
-
-      if (isWebApiError) {
-        if ((error as WebapiError).statusCode === 401) {
+      let errorMessage = error;
+      if (isWebApiError(error)) {
+        const webApiError = error as WebapiError;
+        if (isFirstAttempt && webApiError.statusCode === 401) {
           this.log.debug('Access token has expired, attempting token refresh');
 
           const areTokensRefreshed = await this.refreshTokens();
           if (areTokensRefreshed) {
-            return this.wrappedRequest(cb);
+            return this.wrappedRequest(cb, false);
           }
-        } else if ((error as WebapiError).statusCode === 404) {
-          throw new SpotifyDeviceNotFoundError();
+        } else if (webApiError.statusCode === 404) {
+          return isFirstAttempt ? this.wrappedRequest(cb, false) : Promise.reject(new SpotifyDeviceNotFoundError());
         }
+        errorMessage = webApiError.body;
       }
 
-      const errorMessage = isWebApiError ? (error as WebapiError).body : error;
       this.log.error('Unexpected error when making a request to Spotify:', JSON.stringify(errorMessage));
     }
   }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isWebApiError(error: any): boolean {
+  return error.constructor.name === 'WebapiError' || Object.getPrototypeOf(error.constructor).name === 'WebapiError';
 }

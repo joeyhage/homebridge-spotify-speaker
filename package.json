@@ -29,7 +29,8 @@
     "prepare": "husky install",
     "prepublishOnly": "npm run lint && npm run format && npm run build",
     "watch": "npm run build && npm link && nodemon",
-    "test": "jest --silent=false"
+    "test": "jest --silent=false --runInBand",
+    "test-ci": "jest --silent=true --runInBand --testPathPattern='test.ts'"
   },
   "keywords": [
     "homebridge-plugin",
