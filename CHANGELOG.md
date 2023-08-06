@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.2] - 2023-08-06
+
+### Fixed
+
+- Automatically retry once on error because some Wi-Fi enabled Spotify speakers cannot be found on the first attempt after a period of inactivity.
+
 ## [1.3.1] - 2023-04-29
 
 ### Changed
@@ -32,7 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Change poblouin references to joeyhage since the old homebridge plugin is no longer maintained
 
-[unreleased]: https://github.com/joeyhage/homebridge-spotify-speaker/compare/v1.3.1...HEAD
+[unreleased]: https://github.com/joeyhage/homebridge-spotify-speaker/compare/v1.3.2...HEAD
+[1.3.2]: https://github.com/joeyhage/homebridge-spotify-speaker/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/joeyhage/homebridge-spotify-speaker/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/joeyhage/homebridge-spotify-speaker/compare/v1.2.4...v1.3.0
 [1.2.4]: https://github.com/joeyhage/homebridge-spotify-speaker/compare/v1.2.3...v1.2.4
