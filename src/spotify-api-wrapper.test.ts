@@ -29,14 +29,14 @@ test('should re-attempt to retrieve device list once', async () => {
   expect(mockSpotifyWebApi.getMyDevices).toHaveBeenCalledTimes(2);
 });
 
-test('should re-attempt wrapped request once when 404', async () => {
+test('should re-attempt wrapped request once on HTTP 404', async () => {
   // given
   const wrapper = getSpotifyApiWrapper();
 
   const mockSpotifyWebApi = getMockedSpotifyWebApi();
   mockSpotifyWebApi.getMyCurrentPlaybackState
     .mockRejectedValueOnce(new WebapiError('test', {} as WebapiErrorBody, {}, 404, 'device not found'))
-    .mockResolvedValueOnce(fakeGetMyCurrentPlaybackState);
+    .mockResolvedValueOnce(fakeCurrentPlaybackResponse);
 
   // when
   const playbackState = await wrapper.getPlaybackState();
@@ -46,7 +46,7 @@ test('should re-attempt wrapped request once when 404', async () => {
   expect(mockSpotifyWebApi.getMyCurrentPlaybackState).toHaveBeenCalledTimes(2);
 });
 
-test('should throw SpotifyDeviceNotFoundError after two 404s', async () => {
+test('should throw SpotifyDeviceNotFoundError on second HTTP 404', async () => {
   // given
   const wrapper = getSpotifyApiWrapper();
 
@@ -60,6 +60,24 @@ test('should throw SpotifyDeviceNotFoundError after two 404s', async () => {
 
   // then
   await expect(playbackState).rejects.toThrow(SpotifyDeviceNotFoundError);
+});
+
+test('should refresh token on HTTP 401', async () => {
+  // given
+  const wrapper = getSpotifyApiWrapper();
+
+  const mockSpotifyWebApi = getMockedSpotifyWebApi();
+  mockSpotifyWebApi.getMyCurrentPlaybackState
+    .mockRejectedValueOnce(new WebapiError('test', {} as WebapiErrorBody, {}, 401, 'unauthorized'))
+    .mockResolvedValueOnce(fakeCurrentPlaybackResponse);
+  mockSpotifyWebApi.refreshAccessToken.mockResolvedValueOnce(fakeAccessTokenResponse);
+
+  // when
+  const playbackState = await wrapper.getPlaybackState();
+
+  // then
+  expect(playbackState?.body.is_playing).toBe(false);
+  expect(mockSpotifyWebApi.getMyCurrentPlaybackState).toHaveBeenCalledTimes(2);
 });
 
 function getSpotifyApiWrapper(): SpotifyApiWrapper {
@@ -96,8 +114,14 @@ const fakeGetMyDevicesResponse = {
   statusCode: 200,
 };
 
-const fakeGetMyCurrentPlaybackState = {
+const fakeCurrentPlaybackResponse = {
   body: { is_playing: false } as SpotifyApi.CurrentPlaybackResponse,
+  headers: {},
+  statusCode: 200,
+};
+
+const fakeAccessTokenResponse = {
+  body: { access_token: 'zzz', expires_in: 0, scope: 'fake_scope', token_type: 'fake_type' },
   headers: {},
   statusCode: 200,
 };

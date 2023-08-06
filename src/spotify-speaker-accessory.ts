@@ -126,9 +126,9 @@ export class SpotifySpeakerAccessory {
       if (match?.id) {
         this.device.spotifyDeviceId = match.id;
       } else if (isFirstAttempt) {
-        await new Promise((resolve) => {
+        await new Promise((resolve, reject) => {
           setTimeout(() => {
-            this.setCurrentStates(false).then(resolve);
+            this.setCurrentStates(false).then(resolve).catch(reject);
           }, 500);
         });
       } else {
