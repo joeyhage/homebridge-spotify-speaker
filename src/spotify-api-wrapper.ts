@@ -101,9 +101,9 @@ export class SpotifyApiWrapper {
       return res.body.devices;
     } catch (error) {
       if (isFirstAttempt) {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
           setTimeout(() => {
-            this.getMyDevices(false).then(resolve);
+            this.getMyDevices(false).then(resolve).catch(reject);
           }, 500);
         });
       } else {
@@ -167,6 +167,21 @@ export class SpotifyApiWrapper {
   }
 
   private async wrappedRequest<T>(cb: () => Promise<T>, isFirstAttempt = true): Promise<T | undefined> {
+    const retry = (): Promise<T | undefined> => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          this.wrappedRequest(cb, false).then(resolve).catch(reject);
+        }, 500);
+      });
+    };
+
+    const throwSpotifyDeviceNotFound = (errorMessage: string): Promise<T | undefined> => {
+      return new Promise((_, reject) => {
+        this.log.error('SpotifyDeviceNotFoundError:', JSON.stringify(errorMessage));
+        reject(new SpotifyDeviceNotFoundError());
+      });
+    };
+
     try {
       const response = await cb();
       return response;
@@ -179,10 +194,10 @@ export class SpotifyApiWrapper {
 
           const areTokensRefreshed = await this.refreshTokens();
           if (areTokensRefreshed) {
-            return this.wrappedRequest(cb, false);
+            return retry();
           }
         } else if (webApiError.statusCode === 404) {
-          return isFirstAttempt ? this.wrappedRequest(cb, false) : Promise.reject(new SpotifyDeviceNotFoundError());
+          return isFirstAttempt ? retry() : throwSpotifyDeviceNotFound(JSON.stringify(errorMessage));
         }
         errorMessage = webApiError.body;
       }
@@ -192,7 +207,12 @@ export class SpotifyApiWrapper {
   }
 }
 
+const WebApiErrorTypes = ['WebapiError', 'WebapiRegularError', 'WebapiAuthenticationError', 'WebapiPlayerError'];
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isWebApiError(error: any): boolean {
-  return error.constructor.name === 'WebapiError' || Object.getPrototypeOf(error.constructor).name === 'WebapiError';
+  return (
+    WebApiErrorTypes.includes(error.constructor.name) ||
+    WebApiErrorTypes.includes(Object.getPrototypeOf(error.constructor).name) ||
+    WebApiErrorTypes.includes(Object.getPrototypeOf(error).constructor.name)
+  );
 }
