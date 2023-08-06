@@ -78,13 +78,16 @@ export class SpotifyApiWrapper {
     }
   }
 
-  async play(deviceId: string, contextUri: string) {
+  async play(deviceId: string, contextUri: string, startAtOffset = 0) {
     const options = {
       device_id: deviceId,
       context_uri: contextUri,
+      offset: { position: startAtOffset },
     };
 
-    this.logger.debug(`play called with deviceId=${deviceId}, contextUri=${contextUri}`);
+    this.logger.debug(
+      `play called with deviceId=${deviceId}, contextUri=${contextUri}. startAtOffset=${startAtOffset}`,
+    );
     await this.wrappedRequest(() => this.spotifyApi.play(options));
   }
 
@@ -93,14 +96,23 @@ export class SpotifyApiWrapper {
     await this.wrappedRequest(() => this.spotifyApi.pause({ device_id: deviceId }));
   }
 
+  async getPlaylist(contextUri: string) {
+    this.logger.debug(`getPlaylist called with contextUri=${contextUri}`);
+    const playlistId = SpotifyApiWrapper.extractPlaylistId(contextUri);
+    if (playlistId) {
+      const res = await this.wrappedRequest(() => this.spotifyApi.getPlaylist(playlistId, { fields: 'tracks.total' }));
+      return res?.body?.tracks?.total ?? 0;
+    }
+  }
+
   async getPlaybackState(): Promise<SpotifyPlaybackState | undefined> {
     this.logger.debug('getPlaybackState called');
     return this.wrappedRequest(() => this.spotifyApi.getMyCurrentPlaybackState());
   }
 
-  async setShuffle(state: HomebridgeSpotifySpeakerDevice['playlistShuffle'], deviceId: string) {
+  async setShuffle(state: boolean, deviceId: string) {
     this.logger.debug(`setShuffle called with state=${state}, deviceId=${deviceId}`);
-    await this.wrappedRequest(() => this.spotifyApi.setShuffle(state ?? true, { device_id: deviceId }));
+    await this.wrappedRequest(() => this.spotifyApi.setShuffle(state, { device_id: deviceId }));
   }
 
   async setRepeat(state: HomebridgeSpotifySpeakerDevice['playlistRepeat'], deviceId: string) {
@@ -230,6 +242,20 @@ export class SpotifyApiWrapper {
       }
 
       this.logger.error('Unexpected error when making request to Spotify:', JSON.stringify(errorMessage));
+    }
+  }
+
+  static extractPlaylistId(playlistUrl: string): string | null {
+    try {
+      // Empty playlist ID is allowed for cases where one wants to only
+      // play or pause one speaker started from an external source.
+      if (!playlistUrl) {
+        return null;
+      }
+
+      return new URL(playlistUrl).pathname.split('/')[2];
+    } catch (error) {
+      return null;
     }
   }
 }

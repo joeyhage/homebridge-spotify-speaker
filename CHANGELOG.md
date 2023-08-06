@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.3] - 2023-08-09
+
+### Fixed
+
+- If shuffle is enabled for the accessory, ensure the first track played is randomized when the accessory is turned on.
+
 ## [1.3.2] - 2023-08-08
 
 ### Added
@@ -42,7 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Change poblouin references to joeyhage since the old homebridge plugin is no longer maintained
 
-[unreleased]: https://github.com/joeyhage/homebridge-spotify-speaker/compare/v1.3.2...HEAD
+[unreleased]: https://github.com/joeyhage/homebridge-spotify-speaker/compare/v1.3.3...HEAD
+[1.3.3]: https://github.com/joeyhage/homebridge-spotify-speaker/compare/v1.3.2...v1.3.3
 [1.3.2]: https://github.com/joeyhage/homebridge-spotify-speaker/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/joeyhage/homebridge-spotify-speaker/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/joeyhage/homebridge-spotify-speaker/compare/v1.2.4...v1.3.0

@@ -7,7 +7,6 @@ import {
   PlatformConfig,
   Service,
 } from 'homebridge';
-import { URL } from 'url';
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
 import { SpotifyApiWrapper } from './spotify-api-wrapper';
 import { SpotifySpeakerAccessory } from './spotify-speaker-accessory';
@@ -162,26 +161,16 @@ export class HomebridgeSpotifySpeakerPlatform implements DynamicPlatformPlugin {
   }
 
   private extractPlaylistId(playlistUrl: string): string | null {
-    try {
-      // Empty playlist ID is allowed for cases where one wants to only
-      // play or pause one speaker started from an external source.
-      if (!playlistUrl) {
-        return null;
-      }
-
-      const url = new URL(playlistUrl);
-      const playlistId = url.pathname.split('/')[2];
+    const playlistId = SpotifyApiWrapper.extractPlaylistId(playlistUrl);
+    if (playlistId) {
       this.logger.debug(`Found playlistId: ${playlistId}`);
-
-      return playlistId;
-    } catch (error) {
+    } else {
       this.logger.error(
         `Failed to extract playlist ID, the plugin might behave in an unexpected way.
         Please check the configuration and provide a valid playlist URL`,
       );
-
-      return null;
     }
+    return playlistId;
   }
 
   private getDeviceConstructor(deviceType): typeof SpotifySpeakerAccessory | null {

@@ -8,6 +8,8 @@ export class SpotifySpeakerAccessory {
   private activeState: boolean;
   private currentVolume: number;
 
+  public readonly pollInterval: NodeJS.Timer;
+
   public static CATEGORY = Categories.LIGHTBULB;
   public static DEVICES: SpotifyApi.UserDevice[] = [];
   public static CURRENT_STATE: SpotifyApi.CurrentPlaybackResponse | undefined = undefined;
@@ -39,7 +41,7 @@ export class SpotifySpeakerAccessory {
 
     this.setInitialState();
 
-    setInterval(async () => {
+    this.pollInterval = setInterval(async () => {
       const oldActiveState = this.activeState;
       const oldVolume = this.currentVolume;
 
@@ -67,8 +69,14 @@ export class SpotifySpeakerAccessory {
 
     try {
       if (value) {
-        await this.platform.spotifyApiWrapper.play(this.device.spotifyDeviceId!, this.device.spotifyPlaylistUrl);
-        await this.platform.spotifyApiWrapper.setShuffle(this.device.playlistShuffle, this.device.spotifyDeviceId!);
+        const doShuffle = this.device.playlistShuffle ?? true;
+        const offset = await this.chooseRandomOffset(doShuffle);
+        await this.platform.spotifyApiWrapper.play(
+          this.device.spotifyDeviceId!,
+          this.device.spotifyPlaylistUrl,
+          offset,
+        );
+        await this.platform.spotifyApiWrapper.setShuffle(doShuffle, this.device.spotifyDeviceId!);
         await this.platform.spotifyApiWrapper.setRepeat(!!this.device.playlistRepeat, this.device.spotifyDeviceId!);
       } else {
         await this.platform.spotifyApiWrapper.pause(this.device.spotifyDeviceId!);
@@ -166,5 +174,14 @@ export class SpotifySpeakerAccessory {
     }
 
     return false;
+  }
+
+  private async chooseRandomOffset(doShuffle: boolean) {
+    if (doShuffle) {
+      const trackCount = (await this.platform.spotifyApiWrapper.getPlaylist(this.device.spotifyPlaylistUrl)) ?? 0;
+      return Math.floor(Math.random() * trackCount);
+    } else {
+      return 0;
+    }
   }
 }
