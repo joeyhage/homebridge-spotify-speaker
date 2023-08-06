@@ -10,7 +10,8 @@ import {
 import { URL } from 'url';
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
 import { SpotifyApiWrapper } from './spotify-api-wrapper';
-import { HomebridgeSpotifySpeakerDevice, SpotifySpeakerAccessory } from './spotify-speaker-accessory';
+import { SpotifySpeakerAccessory } from './spotify-speaker-accessory';
+import type { HomebridgeSpotifySpeakerDevice } from './types';
 
 const DEVICE_CLASS_CONFIG_MAP = {
   speaker: SpotifySpeakerAccessory,

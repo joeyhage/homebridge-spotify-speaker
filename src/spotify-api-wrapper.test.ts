@@ -89,6 +89,7 @@ function getSpotifyApiWrapper(): SpotifyApiWrapper {
       spotifyClientSecret: '',
     } as unknown as PlatformConfig,
     { user: { persistPath: () => '.' } } as API,
+    1,
   );
 }
 

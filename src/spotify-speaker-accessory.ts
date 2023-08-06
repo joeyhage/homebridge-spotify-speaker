@@ -1,16 +1,6 @@
-import { Service, PlatformAccessory, Logger, Categories } from 'homebridge';
-
+import { Categories, Logger, PlatformAccessory, Service } from 'homebridge';
 import type { HomebridgeSpotifySpeakerPlatform } from './platform';
-
-export interface HomebridgeSpotifySpeakerDevice {
-  deviceName: string;
-  deviceType: string;
-  spotifyDeviceId?: string;
-  spotifyDeviceName?: string;
-  spotifyPlaylistUrl: string;
-  playlistRepeat?: boolean;
-  playlistShuffle?: boolean;
-}
+import type { HomebridgeSpotifySpeakerDevice } from './types';
 
 export class SpotifySpeakerAccessory {
   private static DEFAULT_POLL_INTERVAL_S = 20;

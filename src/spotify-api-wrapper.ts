@@ -1,10 +1,8 @@
 import fs from 'fs';
+import type { API, Logger, PlatformConfig } from 'homebridge';
 import SpotifyWebApi from 'spotify-web-api-node';
 import { SpotifyDeviceNotFoundError } from './errors';
-
-import type { API, Logger, PlatformConfig } from 'homebridge';
-import type { HomebridgeSpotifySpeakerDevice } from './spotify-speaker-accessory';
-import { SpotifyPlaybackState, WebapiError } from './types';
+import type { HomebridgeSpotifySpeakerDevice, SpotifyPlaybackState, WebapiError } from './types';
 
 const DEFAULT_SPOTIFY_CALLBACK = 'https://example.com/callback';
 
@@ -14,7 +12,12 @@ export class SpotifyApiWrapper {
 
   private spotifyApi: SpotifyWebApi;
 
-  constructor(public readonly log: Logger, public readonly config: PlatformConfig, public readonly api: API) {
+  constructor(
+    public readonly log: Logger,
+    public readonly config: PlatformConfig,
+    public readonly api: API,
+    private readonly retryDelayMs: number = 1000,
+  ) {
     this.authCode = config.spotifyAuthCode;
     this.persistPath = `${api.user.persistPath()}/.homebridge-spotify-speaker`;
 
@@ -104,7 +107,7 @@ export class SpotifyApiWrapper {
         return new Promise((resolve, reject) => {
           setTimeout(() => {
             this.getMyDevices(false).then(resolve).catch(reject);
-          }, 500);
+          }, this.retryDelayMs);
         });
       } else {
         this.log.error('Failed to fetch available Spotify devices.', error);
@@ -171,7 +174,7 @@ export class SpotifyApiWrapper {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           this.wrappedRequest(cb, false).then(resolve).catch(reject);
-        }, 500);
+        }, this.retryDelayMs);
       });
     };
 
@@ -189,6 +192,7 @@ export class SpotifyApiWrapper {
       let errorMessage = error;
       if (isWebApiError(error)) {
         const webApiError = error as WebapiError;
+        errorMessage = webApiError.body;
         if (isFirstAttempt && webApiError.statusCode === 401) {
           this.log.debug('Access token has expired, attempting token refresh');
 
@@ -199,7 +203,6 @@ export class SpotifyApiWrapper {
         } else if (webApiError.statusCode === 404) {
           return isFirstAttempt ? retry() : throwSpotifyDeviceNotFound(JSON.stringify(errorMessage));
         }
-        errorMessage = webApiError.body;
       }
 
       this.log.error('Unexpected error when making a request to Spotify:', JSON.stringify(errorMessage));
