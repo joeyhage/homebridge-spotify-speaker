@@ -41,6 +41,27 @@
         "placeholder": "Get speaker status every __ seconds",
         "description": "Speaker status does not update live and must be fetched periodically. This is done every 20 seconds by default"
       },
+      "deviceNotFoundRetry": {
+        "type": "object",
+        "properties": {
+          "enable": {
+            "title": "Enable retry when 'device not found' errors occur",
+            "type": "boolean",
+            "required": false,
+            "default": false,
+            "description": "Wi-Fi enabled Spotify devices may disconnect from Spotify after a period of time causing device not found errors. This setting determines if the current operation (e.g. play/set volume) should be retried."
+          },
+          "retryDelay": {
+            "title": "Device not found retry delay milliseconds",
+            "type": "integer",
+            "default": 2000,
+            "minimum": 500,
+            "maximum": 10000,
+            "placeholder": "Retry operation after __ milliseconds if Spotify reports device was not found.",
+            "description": "Wi-Fi enabled Spotify devices may disconnect from Spotify after a period of time causing device not found errors. This setting determines how long to wait to allow the device to wake (reconnect to Spotify) before retrying once."
+          }
+        }
+      },
       "devices": {
         "type": "array",
         "items": {
@@ -95,6 +116,13 @@
             }
           }
         }
+      },
+      "debug": {
+        "title": "Debug logging",
+        "description": "Whether to enable debug logging for troubleshooting issues and support.",
+        "type": "boolean",
+        "required": false,
+        "default": false
       }
     }
   }

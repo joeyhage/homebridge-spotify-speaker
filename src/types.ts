@@ -1,3 +1,13 @@
+export interface HomebridgeSpotifySpeakerDevice {
+  deviceName: string;
+  deviceType: string;
+  spotifyDeviceId?: string;
+  spotifyDeviceName?: string;
+  spotifyPlaylistUrl: string;
+  playlistRepeat?: boolean;
+  playlistShuffle?: boolean;
+}
+
 export interface WebapiErrorBody {
   error: {
     message: string;

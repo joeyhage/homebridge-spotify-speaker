@@ -1,30 +1,22 @@
-import { Service, PlatformAccessory, Logger, Categories } from 'homebridge';
-
+import { Categories, PlatformAccessory, Service } from 'homebridge';
 import type { HomebridgeSpotifySpeakerPlatform } from './platform';
-
-export interface HomebridgeSpotifySpeakerDevice {
-  deviceName: string;
-  deviceType: string;
-  spotifyDeviceId?: string;
-  spotifyDeviceName?: string;
-  spotifyPlaylistUrl: string;
-  playlistRepeat?: boolean;
-  playlistShuffle?: boolean;
-}
+import { PluginLogger } from './plugin-logger';
+import type { HomebridgeSpotifySpeakerDevice } from './types';
 
 export class SpotifySpeakerAccessory {
-  private static DEFAULT_POLL_INTERVAL_S = 20;
   private service: Service;
   private activeState: boolean;
   private currentVolume: number;
 
   public static CATEGORY = Categories.LIGHTBULB;
+  public static DEVICES: SpotifyApi.UserDevice[] = [];
+  public static CURRENT_STATE: SpotifyApi.CurrentPlaybackResponse | undefined = undefined;
 
   constructor(
     private readonly platform: HomebridgeSpotifySpeakerPlatform,
     private readonly accessory: PlatformAccessory,
     private readonly device: HomebridgeSpotifySpeakerDevice,
-    public readonly log: Logger,
+    private readonly logger: PluginLogger,
   ) {
     this.service =
       this.accessory.getService(this.platform.Service.Lightbulb) ||
@@ -51,7 +43,7 @@ export class SpotifySpeakerAccessory {
       const oldActiveState = this.activeState;
       const oldVolume = this.currentVolume;
 
-      await this.setCurrentStates();
+      this.setCurrentStates();
 
       if (oldActiveState !== this.activeState) {
         this.service.getCharacteristic(this.platform.Characteristic.On).updateValue(this.activeState);
@@ -59,16 +51,16 @@ export class SpotifySpeakerAccessory {
       if (oldVolume !== this.currentVolume) {
         this.service.updateCharacteristic(this.platform.Characteristic.Brightness, this.currentVolume);
       }
-    }, (this.platform.config.spotifyPollInterval || SpotifySpeakerAccessory.DEFAULT_POLL_INTERVAL_S) * 1000);
+    }, this.platform.pollIntervalSec * 1000);
   }
 
   handleOnGet(): boolean {
-    this.log.debug('Triggered GET Active:', this.activeState);
+    this.logger.debug('Triggered GET Active:', this.activeState);
     return this.activeState;
   }
 
   async handleOnSet(value): Promise<void> {
-    this.log.debug('Triggered SET Active:', value);
+    this.logger.debug('Triggered SET Active:', value);
     if (value === this.activeState) {
       return;
     }
@@ -91,12 +83,12 @@ export class SpotifySpeakerAccessory {
   }
 
   async handleBrightnessGet() {
-    this.log.debug('Get volume', this.currentVolume);
+    this.logger.debug('Get volume', this.currentVolume);
     return this.currentVolume;
   }
 
   async handleBrightnessSet(value): Promise<void> {
-    this.log.debug('Set volume:', value);
+    this.logger.debug('Set volume:', value);
     if (value === this.currentVolume) {
       return;
     }
@@ -111,45 +103,38 @@ export class SpotifySpeakerAccessory {
     }
   }
 
-  private async setInitialState(): Promise<void> {
-    await this.setCurrentStates();
+  private setInitialState(): void {
+    this.setCurrentStates();
 
-    this.log.debug(`Set initial state // active ${this.activeState} // volume ${this.currentVolume}`);
+    this.logger.debug(`Set initial state // active ${this.activeState} // volume ${this.currentVolume}`);
     this.service.getCharacteristic(this.platform.Characteristic.On).updateValue(this.activeState);
     this.service.getCharacteristic(this.platform.Characteristic.Brightness).updateValue(this.currentVolume);
   }
 
-  private async setCurrentStates(isFirstAttempt = true) {
+  private setCurrentStates() {
     if (this.device.spotifyDeviceName) {
-      const devices = await this.platform.spotifyApiWrapper.getMyDevices();
-      const match = devices?.find((device) => device.name === this.device.spotifyDeviceName);
+      const match = SpotifySpeakerAccessory.DEVICES?.find((device) => device.name === this.device.spotifyDeviceName);
       if (match?.id) {
         this.device.spotifyDeviceId = match.id;
-      } else if (isFirstAttempt) {
-        await new Promise((resolve, reject) => {
-          setTimeout(() => {
-            this.setCurrentStates(false).then(resolve).catch(reject);
-          }, 500);
-        });
       } else {
-        this.log.error(
+        this.logger.error(
           `spotifyDeviceName '${this.device.spotifyDeviceName}' did not match any Spotify devices. spotifyDeviceName is case sensitive.`,
         );
       }
     }
-    const state = await this.platform.spotifyApiWrapper.getPlaybackState();
-    const playingHref = state?.body?.context?.href;
-    const playingDeviceId = state?.body?.device?.id;
 
-    if (!state || state.statusCode !== 200) {
+    if (!SpotifySpeakerAccessory.CURRENT_STATE) {
       this.activeState = false;
       this.currentVolume = 0;
       return;
     }
 
-    if (state.body.is_playing && this.isPlaying(playingHref, playingDeviceId ?? undefined)) {
-      this.activeState = state.body.is_playing;
-      this.currentVolume = state.body.device.volume_percent || 0;
+    const playingHref = SpotifySpeakerAccessory.CURRENT_STATE.context?.href;
+    const playingDeviceId = SpotifySpeakerAccessory.CURRENT_STATE.device?.id;
+
+    if (SpotifySpeakerAccessory.CURRENT_STATE.is_playing && this.isPlaying(playingHref, playingDeviceId ?? undefined)) {
+      this.activeState = SpotifySpeakerAccessory.CURRENT_STATE.is_playing;
+      this.currentVolume = SpotifySpeakerAccessory.CURRENT_STATE.device.volume_percent || 0;
     } else {
       this.activeState = false;
       this.currentVolume = 0;

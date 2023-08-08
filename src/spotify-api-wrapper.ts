@@ -1,22 +1,34 @@
 import fs from 'fs';
+import type { API, PlatformConfig } from 'homebridge';
 import SpotifyWebApi from 'spotify-web-api-node';
 import { SpotifyDeviceNotFoundError } from './errors';
-
-import type { API, Logger, PlatformConfig } from 'homebridge';
-import type { HomebridgeSpotifySpeakerDevice } from './spotify-speaker-accessory';
-import { SpotifyPlaybackState, WebapiError } from './types';
+import { PluginLogger } from './plugin-logger';
+import type { HomebridgeSpotifySpeakerDevice, SpotifyPlaybackState, WebapiError } from './types';
 
 const DEFAULT_SPOTIFY_CALLBACK = 'https://example.com/callback';
+const DEFAULT_RETRY_DELAY_MS = 2000;
 
 export class SpotifyApiWrapper {
   private readonly authCode: string;
   private readonly persistPath: string;
 
   private spotifyApi: SpotifyWebApi;
+  private enableRetry: boolean;
+  private retryDelayMs: number;
 
-  constructor(public readonly log: Logger, public readonly config: PlatformConfig, public readonly api: API) {
+  constructor(private readonly logger: PluginLogger, public readonly config: PlatformConfig, public readonly api: API) {
     this.authCode = config.spotifyAuthCode;
     this.persistPath = `${api.user.persistPath()}/.homebridge-spotify-speaker`;
+    this.enableRetry = config.deviceNotFoundRetry.enable;
+
+    if (this.enableRetry) {
+      this.retryDelayMs =
+        typeof config.deviceNotFoundRetry.retryDelay === 'number'
+          ? config.deviceNotFoundRetry.retryDelay
+          : DEFAULT_RETRY_DELAY_MS;
+    } else {
+      this.retryDelayMs = 0;
+    }
 
     this.spotifyApi = new SpotifyWebApi({
       clientId: config.spotifyClientId,
@@ -28,17 +40,17 @@ export class SpotifyApiWrapper {
   async authenticate(): Promise<boolean> {
     await this.fetchTokensFromStorage();
     if (this.spotifyApi.getAccessToken()) {
-      this.log.debug('Spotify auth success using saved tokens');
+      this.logger.debug('Spotify auth success using saved tokens');
       return true;
     }
 
     await this.authWithCodeGrant();
     if (this.spotifyApi.getAccessToken()) {
-      this.log.debug('Spotify auth success using authorization code flow');
+      this.logger.debug('Spotify auth success using authorization code flow');
       return true;
     }
 
-    this.log.error(
+    this.logger.error(
       `We could not fetch the Spotify tokens nor authenticate using the code grant flow.
         Please redo the manual login step, provide the new auth code in the config then try again.`,
     );
@@ -59,7 +71,7 @@ export class SpotifyApiWrapper {
     try {
       fs.writeFileSync(this.persistPath, writeData);
     } catch (err) {
-      this.log.warn(
+      this.logger.warn(
         'Failed to persist tokens, the plugin might not be able to authenticate when homebridge restarts:\n\n',
         err,
       );
@@ -72,67 +84,66 @@ export class SpotifyApiWrapper {
       context_uri: contextUri,
     };
 
+    this.logger.debug(`play called with deviceId=${deviceId}, contextUri=${contextUri}`);
     await this.wrappedRequest(() => this.spotifyApi.play(options));
   }
 
   async pause(deviceId: string) {
+    this.logger.debug(`pause called with deviceId=${deviceId}`);
     await this.wrappedRequest(() => this.spotifyApi.pause({ device_id: deviceId }));
   }
 
   async getPlaybackState(): Promise<SpotifyPlaybackState | undefined> {
+    this.logger.debug('getPlaybackState called');
     return this.wrappedRequest(() => this.spotifyApi.getMyCurrentPlaybackState());
   }
 
   async setShuffle(state: HomebridgeSpotifySpeakerDevice['playlistShuffle'], deviceId: string) {
+    this.logger.debug(`setShuffle called with state=${state}, deviceId=${deviceId}`);
     await this.wrappedRequest(() => this.spotifyApi.setShuffle(state ?? true, { device_id: deviceId }));
   }
 
   async setRepeat(state: HomebridgeSpotifySpeakerDevice['playlistRepeat'], deviceId: string) {
+    this.logger.debug(`setRepeat called with state=${state}, deviceId=${deviceId}`);
     await this.wrappedRequest(() => this.spotifyApi.setRepeat(state ? 'context' : 'off', { device_id: deviceId }));
   }
 
   async setVolume(volume: number, deviceId: string) {
+    this.logger.debug(`setVolume called with volume=${volume}, deviceId=${deviceId}`);
     await this.wrappedRequest(() => this.spotifyApi.setVolume(volume, { device_id: deviceId }));
   }
 
-  async getMyDevices(isFirstAttempt = true): Promise<SpotifyApi.UserDevice[]> {
+  async getMyDevices(): Promise<SpotifyApi.UserDevice[]> {
+    this.logger.debug('getMyDevices called');
     try {
-      const res = await this.spotifyApi.getMyDevices();
-      return res.body.devices;
+      const res = await this.wrappedRequest(() => this.spotifyApi.getMyDevices());
+      return res?.body?.devices ?? [];
     } catch (error) {
-      if (isFirstAttempt) {
-        return new Promise((resolve, reject) => {
-          setTimeout(() => {
-            this.getMyDevices(false).then(resolve).catch(reject);
-          }, 500);
-        });
-      } else {
-        this.log.error('Failed to fetch available Spotify devices.', error);
-        return [];
-      }
+      this.logger.error('Failed to fetch available Spotify devices.', error);
+      return [];
     }
   }
 
   private async authWithCodeGrant(): Promise<void> {
-    this.log.debug('Attempting the code grant authorization flow');
+    this.logger.debug('Attempting the code grant authorization flow');
 
     try {
       const data = await this.spotifyApi.authorizationCodeGrant(this.authCode);
       this.spotifyApi.setAccessToken(data.body['access_token']);
       this.spotifyApi.setRefreshToken(data.body['refresh_token']);
     } catch (err) {
-      this.log.error('Could not authorize Spotify:\n\n', JSON.stringify(err));
+      this.logger.error('Could not authorize Spotify:\n\n', JSON.stringify(err));
     }
   }
 
   private async fetchTokensFromStorage() {
-    this.log.debug('Attempting to fetch tokens saved in the storage');
+    this.logger.debug('Attempting to fetch tokens saved in the storage');
 
     let tokens: { accessToken: string; refreshToken: string };
     try {
       tokens = JSON.parse(fs.readFileSync(this.persistPath, { encoding: 'utf-8' }));
     } catch (err) {
-      this.log.debug('Failed to fetch tokens: ', err);
+      this.logger.debug('Failed to fetch tokens:', err);
       return;
     }
 
@@ -142,7 +153,7 @@ export class SpotifyApiWrapper {
 
     this.spotifyApi.setAccessToken(tokens.accessToken);
     this.spotifyApi.setRefreshToken(tokens.refreshToken);
-    this.log.debug('Successfully fetched the tokens from storage, going to refresh the access token');
+    this.logger.debug('Successfully fetched the tokens from storage, going to refresh the access token');
 
     const areTokensRefreshed = await this.refreshTokens();
     if (!areTokensRefreshed) {
@@ -154,30 +165,37 @@ export class SpotifyApiWrapper {
   async refreshTokens(): Promise<boolean> {
     try {
       const data = await this.spotifyApi.refreshAccessToken();
-      this.log.debug('The access token has been refreshed!');
+      this.logger.debug('The access token has been refreshed!');
 
       this.spotifyApi.setAccessToken(data.body['access_token']);
       this.persistTokens();
     } catch (error: unknown) {
-      this.log.debug('Could not refresh access token: ', (error as WebapiError).body);
+      this.logger.debug('Could not refresh access token:', (error as WebapiError).body);
       return false;
     }
 
     return true;
   }
 
-  private async wrappedRequest<T>(cb: () => Promise<T>, isFirstAttempt = true): Promise<T | undefined> {
-    const retry = (): Promise<T | undefined> => {
+  private async wrappedRequest<T>(
+    cb: () => Promise<T>,
+    isAuthRetry = false,
+    isFirstAttempt = true,
+  ): Promise<T | undefined> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const retry = (authRetry = false, onError?: (reason: any) => void): Promise<T | undefined> => {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
-          this.wrappedRequest(cb, false).then(resolve).catch(reject);
-        }, 500);
+          this.wrappedRequest(cb, authRetry, authRetry)
+            .then(resolve)
+            .catch(onError ?? reject);
+        }, this.retryDelayMs);
       });
     };
 
     const throwSpotifyDeviceNotFound = (errorMessage: string): Promise<T | undefined> => {
       return new Promise((_, reject) => {
-        this.log.error('SpotifyDeviceNotFoundError:', JSON.stringify(errorMessage));
+        this.logger.error('SpotifyDeviceNotFoundError:', JSON.stringify(errorMessage));
         reject(new SpotifyDeviceNotFoundError());
       });
     };
@@ -189,20 +207,29 @@ export class SpotifyApiWrapper {
       let errorMessage = error;
       if (isWebApiError(error)) {
         const webApiError = error as WebapiError;
-        if (isFirstAttempt && webApiError.statusCode === 401) {
-          this.log.debug('Access token has expired, attempting token refresh');
+        errorMessage = webApiError.body;
+        if (!isAuthRetry && webApiError.statusCode === 401) {
+          this.logger.debug('Access token has expired, attempting token refresh');
 
           const areTokensRefreshed = await this.refreshTokens();
           if (areTokensRefreshed) {
-            return retry();
+            return retry(true, (reason) =>
+              this.logger.error('Unexpected error retrying request after token refresh:', JSON.stringify(reason)),
+            );
           }
         } else if (webApiError.statusCode === 404) {
-          return isFirstAttempt ? retry() : throwSpotifyDeviceNotFound(JSON.stringify(errorMessage));
+          this.logger.debug('Spotify device not found while making request.', {
+            isAuthRetry,
+            isFirstAttempt,
+            enableRetry: this.enableRetry,
+          });
+          return isFirstAttempt && this.enableRetry
+            ? retry()
+            : throwSpotifyDeviceNotFound(JSON.stringify(errorMessage));
         }
-        errorMessage = webApiError.body;
       }
 
-      this.log.error('Unexpected error when making a request to Spotify:', JSON.stringify(errorMessage));
+      this.logger.error('Unexpected error when making request to Spotify:', JSON.stringify(errorMessage));
     }
   }
 }
