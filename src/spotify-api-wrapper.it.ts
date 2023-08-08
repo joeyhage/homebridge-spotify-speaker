@@ -1,4 +1,5 @@
-import { API, Logger, PlatformConfig } from 'homebridge';
+import { API, PlatformConfig } from 'homebridge';
+import type { PluginLogger } from './plugin-logger';
 import { SpotifyApiWrapper } from './spotify-api-wrapper';
 
 it('should authenticate and persist tokens', async () => {
@@ -39,11 +40,12 @@ it('should retrieve playback state', async () => {
 
 function getSpotifyApiWrapper(): SpotifyApiWrapper {
   return new SpotifyApiWrapper(
-    console as Logger,
+    console as unknown as PluginLogger,
     {
       spotifyAuthCode: process.env.SPOTIFY_AUTH_CODE!,
       spotifyClientId: process.env.SPOTIFY_CLIENT_ID!,
       spotifyClientSecret: process.env.SPOTIFY_CLIENT_SECRET!,
+      deviceNotFoundRetry: { enable: false },
     } as unknown as PlatformConfig,
     { user: { persistPath: () => '.' } } as API,
   );

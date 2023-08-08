@@ -95,7 +95,7 @@ Once the spotify authentication flow is done, the plugin will display the list o
 
 You can then take the `name` from the Spotify device that you want to control and this is what you put in the plugin's configuration as the `spotifyDeviceName`.
 
-This is the suggested option because the device id used by Spotify is prone to change.
+This is the suggested option because the device id used by Spotify has been known to change.
 
 ### Alternative option
 
