@@ -66,6 +66,7 @@ export class SpotifyApiWrapper {
     const writeData = JSON.stringify({
       accessToken: this.spotifyApi.getAccessToken(),
       refreshToken: this.spotifyApi.getRefreshToken(),
+      clientId: this.spotifyApi.getClientId(),
     });
 
     try {
@@ -151,7 +152,7 @@ export class SpotifyApiWrapper {
   private async fetchTokensFromStorage() {
     this.logger.debug('Attempting to fetch tokens saved in the storage');
 
-    let tokens: { accessToken: string; refreshToken: string };
+    let tokens: { accessToken: string; refreshToken: string; clientId: string };
     try {
       tokens = JSON.parse(fs.readFileSync(this.persistPath, { encoding: 'utf-8' }));
     } catch (err) {
@@ -160,6 +161,9 @@ export class SpotifyApiWrapper {
     }
 
     if (!tokens.accessToken || !tokens.refreshToken) {
+      return;
+    } else if (tokens.clientId && tokens.clientId !== this.spotifyApi.getClientId()) {
+      fs.writeFileSync(this.persistPath, JSON.stringify({ clientId: this.spotifyApi.getClientId() }));
       return;
     }
 
